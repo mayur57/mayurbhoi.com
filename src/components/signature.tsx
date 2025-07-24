@@ -35,7 +35,6 @@ export const Signature = () => {
         initial={{ opacity: 1 }}
         animate={{ opacity: isInView ? 0 : 1 }}
         transition={{ duration: SIGN_FADE_DURATION, delay: SIGN_FADE_DELAY }}
-        style={{ position: 'absolute' }}
         className='dark:invert'
       >
         <motion.svg
@@ -69,7 +68,7 @@ export const Signature = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: showMotif ? 1 : 0 }}
         transition={{ duration: MOTIF_FADE_DURATION }}
-        style={{ position: 'relative', zIndex: 1 }}
+        style={{ position: 'relative', zIndex: 1, marginTop: '-5rem' }}
       >
         {showMotif && (
           <Motif>Be curious. Read widely. Try new things.<br></br>— Aaron Swartz</Motif>
