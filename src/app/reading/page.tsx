@@ -1,5 +1,7 @@
 'use client'
 
+import Image from "next/image"
+
 export default function ProjectsPage() {
   const books = [
     {
@@ -68,10 +70,11 @@ export default function ProjectsPage() {
               <p className='text-xs'>{project.rating}%</p>
             </div>
             <div className='w-full'>
-              {/* TODO: replace with next image */}
-              <img
+              <Image
                 src={project.image}
                 alt={project.title}
+                height={300}
+                width={240}
                 className='w-1/4 h-auto saturate-90 shadow-sm'
               />
             </div>
