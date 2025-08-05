@@ -68,6 +68,7 @@ export default function ProjectsPage() {
               <p className='text-xs'>{project.rating}%</p>
             </div>
             <div className='w-full'>
+              {/* TODO: replace with next image */}
               <img
                 src={project.image}
                 alt={project.title}

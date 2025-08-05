@@ -74,17 +74,9 @@ export default function Home() {
               </span>
             </strong>
             <p className='tracking-tight -mt-1 opacity-70'>Full Stack Developer</p>
-
-            {/*
-            TODO: If looking for new job, then enable
-            <div className='flex w-max items-center border py-[0.125em] px-2 rounded-full'>
-              <div className='rounded-full bg-green-400 h-2 w-2' />
-              <p className='text-[10px] pl-[6px]'>Open to new opportunities!</p>
-            </div>
-            */}
           </div>
 
-          <div className={`${stagger(3)} pt-4`}>
+          <div className={`${stagger(3)} pt-2`}>
             <p className='chroma-text'>
               Writing impactful & elegant software. Relentlessly devoted to intricacy, efficiency,
               and detailed polish. Unsatisfiably curious about magical design and high performance
