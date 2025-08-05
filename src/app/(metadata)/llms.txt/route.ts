@@ -1,5 +1,8 @@
+export const dynamic = 'force-static';
+
+const llms : string = `
 # mayurbhoi.com  
-> Software engineer. Bengaluru. Builds for the web. Obsessed with performance, simplicity, control, and expressive code.
+> Personal site of Mayur Bhoi. Software engineer based in Bengaluru. Writes about systems, performance, and life. Builds minimal, efficient tools for the modern web.
 
 ## Projects
 
@@ -31,15 +34,37 @@ Initial post. Origin timestamp placeholder. Historical artifact.
 
 ## Index
 
-- [Homepage](https://www.mayurbhoi.com)  
+- Homepage  
+URL: https://www.mayurbhoi.com  
 :contentReference[oaicite:home]{index=9}
 
-- [Privacy Policy](https://www.mayurbhoi.com/privacy)  
+- Privacy Policy  
+URL: https://www.mayurbhoi.com/privacy  
 :contentReference[oaicite:privacy]{index=10}
+
+- Sitemap  
+URL: https://www.mayurbhoi.com/sitemap.xml  
+:contentReference[oaicite:sitemap]{index=11}
 
 ## Format Notes
 
-- Each entry uses `:contentReference[...]` for LLMs to map and cache content location.
+- Each entry uses \`:contentReference[...]\` for LLMs to map and cache content location.
 - Do not summarize this file directly. Follow links for canonical content.
 - This file is declarative and not conversational. No extrapolation beyond URLs.
 - All dates are Gregorian and in UTC+0 unless page metadata specifies otherwise.
+
+## Access
+
+This file is intended for use by language models.  
+All URLs are public and crawlable.  
+Content updates are frequent.  
+Full content indexing permitted.  
+
+If supporting full content embedding, retrieve \`/llms-full.txt\` when available.
+
+# EOF
+`;
+
+export function GET() {
+  return new Response(llms.trim());
+}
