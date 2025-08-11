@@ -6,8 +6,7 @@ import { handleError } from 'src/utils/errorHandler'
 export default function Code({ children }: any) {
     const [copied, setCopied] = useState(false)
 
-    const language = children.props?.className?.replace('language-', '')
-    const displayLanguage = language.split(' ')[1] === '' ? 'text' : language.split(' ')[1]
+    const displayLanguage = children?.props?.className?.replace('language-', '')?.split(' ')?.[0] || 'text'
 
     const extractText = (node: any): string => {
         if (typeof node === 'string') return node
