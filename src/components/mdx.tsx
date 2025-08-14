@@ -103,6 +103,14 @@ function Strong(props: any) {
   return <strong className='font-bold'>{props.children}</strong>
 }
 
+function InlineCode(props: any) {
+  return (
+    <code className='px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-mono text-sm'>
+      {props.children}
+    </code>
+  )
+}
+
 const components = {
   h1: createHeading(1),
   h2: createHeading(2),
@@ -113,6 +121,7 @@ const components = {
   em: emphasis,
   hr: Divider,
   strong: Strong,
+  code: InlineCode,
   Image: RoundedImage,
   a: CustomLink,
   pre: Code,

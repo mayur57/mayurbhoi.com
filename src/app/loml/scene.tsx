@@ -1,19 +1,19 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export default function ThreeScene() {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    if (!mountRef.current) return;
 
-    if (!mountRef.current) {
-      throw new Error("mountRef.current is null");
-    }
+    const scene = new THREE.Scene();
+    scene.background = null;
+
     const camera = new THREE.PerspectiveCamera(
       75,
       mountRef.current.clientWidth / mountRef.current.clientHeight,
@@ -22,7 +22,7 @@ export default function ThreeScene() {
     );
     camera.position.set(200, 200, 250);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     mountRef.current.appendChild(renderer.domElement);
 
@@ -41,19 +41,26 @@ export default function ThreeScene() {
 
     let model: THREE.Group | null = null;
 
-    const loader = new GLTFLoader();
+    // Loader manager for progress tracking
+    const manager = new THREE.LoadingManager();
+    manager.onProgress = (_url, itemsLoaded, itemsTotal) => {
+      setProgress(Math.floor((itemsLoaded / itemsTotal) * 100));
+    };
+    manager.onLoad = () => {
+      setProgress(100);
+      setTimeout(() => setProgress(-1), 300);
+    };
+
+    // Load coke can model
+    const loader = new GLTFLoader(manager);
     loader.load('/models/loml.glb', (gltf: any) => {
       model = gltf.scene;
-      if (model) {
-        scene.add(model);
-      }
+      if (model) scene.add(model);
     });
 
     const animate = () => {
       requestAnimationFrame(animate);
-      if (model) {
-        model.rotation.y += 0.01; // auto-rotate around Y-axis
-      }
+      if (model) model.rotation.y += 0.01;
       controls.update();
       renderer.render(scene, camera);
     };
@@ -68,12 +75,19 @@ export default function ThreeScene() {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      if (mountRef.current) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
+      if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
+  return (
+    <div className="relative w-full h-full">
+      {progress >= 0 && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black text-white z-20">
+          {progress}%
+        </div>
+      )}
+      <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
 }

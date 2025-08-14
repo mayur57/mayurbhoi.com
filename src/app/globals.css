@@ -153,13 +153,23 @@
   }
 
   .prose code {
-    @apply px-1 py-0.5 rounded-lg;
+    @apply px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-mono text-sm;
   }
 
-  .prose pre code {
+  /* Only remove pseudo-elements from inline code, not code blocks */
+  .prose p code::before,
+  .prose p code::after,
+  .prose li code::before,
+  .prose li code::after {
+    content: none !important;
+  }
+
+  .prose pre code,
+  pre code {
     @apply p-0;
     border: initial;
     line-height: 1.5;
+    background-color: transparent !important;
   }
 
   .prose code span {
