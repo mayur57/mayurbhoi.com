@@ -278,6 +278,13 @@
   #desc {
     @apply leading-[1.65];
   }
+
+  .font-features-all {
+    font-feature-settings: 'calt', 'dlig', 'liga', 'kern', 'ss01', 'ss02', 'ss03', 'ss04', 'ss07',
+      'ss08', 'tnum', 'cv02', 'cv03', 'cv04', 'cv11';
+    font-synthesis: none;
+    tab-size: 4;
+  }
 }
 
 @keyframes spin-slow {
@@ -305,8 +312,8 @@
   position: relative;
   background-image: linear-gradient(
     90deg,
-    #18181A 0,
-    #18181A 33.33%,
+    #18181a 0,
+    #18181a 33.33%,
     #c679c4 40%,
     #fa3d1d 45%,
     #ffb005 50%,

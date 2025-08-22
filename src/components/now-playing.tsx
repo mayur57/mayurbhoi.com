@@ -172,7 +172,7 @@ function SpotifyWidget() {
   const [data, setData] = useState<Song | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState({ status: false, message: null })
-  
+
   useEffect(() => {
     const fetchSpotifyData = async () => {
       try {

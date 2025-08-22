@@ -98,10 +98,10 @@ export function generateSuggestions(sortedPosts: any, currPost: any) {
 
   let next = curr + 1
   let prev = curr - 1
-  
-  while(sortedPosts[next]?.metadata.delist) next++
-  while(sortedPosts[prev]?.metadata.delist) prev--
-  
+
+  while (sortedPosts[next]?.metadata.delist) next++
+  while (sortedPosts[prev]?.metadata.delist) prev--
+
   return {
     next: sortedPosts[next],
     previous: sortedPosts[prev],

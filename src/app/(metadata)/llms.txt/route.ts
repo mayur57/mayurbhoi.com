@@ -1,6 +1,6 @@
-export const dynamic = 'force-static';
+export const dynamic = 'force-static'
 
-const llms : string = `
+const llms: string = `
 # mayurbhoi.com  
 > Personal site of Mayur Bhoi. Software engineer based in Bengaluru. Writes about systems, performance, and life. Builds minimal, efficient tools for the modern web.
 
@@ -63,8 +63,8 @@ Full content indexing permitted.
 If supporting full content embedding, retrieve \`/llms-full.txt\` when available.
 
 # EOF
-`;
+`
 
 export function GET() {
-  return new Response(llms.trim());
+  return new Response(llms.trim())
 }

@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+
 import ThreeScene from './scene'
 
 export const metadata: Metadata = {

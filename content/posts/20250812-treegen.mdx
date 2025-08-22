@@ -20,16 +20,14 @@ It’s neat, compact, instantly understandable. The hierarchy is obvious. But th
 
 `treegen` exists to close that gap. You feed it the diagram, it gives you the folder structure on your machine.
 
-
 ### A Problem to Solve
 
 I didn’t set out to “make a Go project” or “ship a CLI tool.”
-I set out to ***avoid wasting my time***.
+I set out to **_avoid wasting my time_**.
 
-I found myself, more than once, with a `tree` command output sitting in a text file, describing exactly the layout I wanted somewhere else. Or a README from a tutorial showing me what the scaffold *should* look like. And each time, I had to translate that into a pile of `mkdir` and `touch` commands.
+I found myself, more than once, with a `tree` command output sitting in a text file, describing exactly the layout I wanted somewhere else. Or a README from a tutorial showing me what the scaffold _should_ look like. And each time, I had to translate that into a pile of `mkdir` and `touch` commands.
 
 Why not reverse the process? The `tree` command turns a filesystem into text. What if something could turn the text back into a filesystem? That’s `treegen`. It is a quality of life improvement for people that deal with templating folder structures often.
-
 
 ### What It Does
 
@@ -37,24 +35,22 @@ You give `treegen` an ASCII tree. It is the same kind of thing you’d paste int
 
 It handles:
 
-* Mixed connectors (`├──`, `└──`, `|--`, `\--`) and even Unicode box-drawing characters.
-* Any indent width, not just four spaces.
-* Trailing slashes for directories, or automatic detection if a node has children.
-* Files with unusual names: spaces, leading dashes, multiple dots.
-* Multiple root-level directories in a single spec.
+- Mixed connectors (`├──`, `└──`, `|--`, `\--`) and even Unicode box-drawing characters.
+- Any indent width, not just four spaces.
+- Trailing slashes for directories, or automatic detection if a node has children.
+- Files with unusual names: spaces, leading dashes, multiple dots.
+- Multiple root-level directories in a single spec.
 
 There’s a `-dry` mode so you can check what it would do before it does anything. And it won’t clobber files that already exist.
 
 It’s small, has no dependencies, and works anywhere Go works.
 
-
 ### Why Not Just Use a Script?
 
 Because a script needs to be written. `treegen` doesn’t.
-It speaks in the same format we already use to *describe* structure. The format you find in documentation, blog posts, Stack Overflow answers. The format the `tree` command spits out.
+It speaks in the same format we already use to _describe_ structure. The format you find in documentation, blog posts, Stack Overflow answers. The format the `tree` command spits out.
 
 When the description is already in front of you, the friction to creating it for real should be zero. That’s the appeal. It’s a general-purpose scaffolding tool that's also a bridge between an idea and a working directory tree.
-
 
 ### How It’s Built
 
@@ -64,7 +60,6 @@ No configuration files, no plugin system. Just the thing that does the thing.
 
 It made me turn my rusty algorithm gears for a bit too so that was great.
 
-
 ### Next
 
 `treegen` will probably stay small. It’s not meant to be a framework but it’s a utility you keep in your repertoire. However, there’s room for small conveniences: maybe templating, maybe file contents inline in the spec, maybe integration with shell pipelines.
@@ -72,7 +67,6 @@ It made me turn my rusty algorithm gears for a bit too so that was great.
 For now, it solves the problem that made me build it. And that’s enough.
 
 I would like to request this though: try to break it. As hard as possible, throw your usecases at it and please file an issue so that I can try to make it as robust as possible.
-
 
 ASCII trees are how we sketch out ideas. `treegen` is the part that makes those sketches real without the mundane in between.
 

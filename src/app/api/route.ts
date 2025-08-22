@@ -1,6 +1,6 @@
-export const dynamic = 'force-static';
+export const dynamic = 'force-static'
 
-const docs : string = `
+const docs: string = `
 
 !!! NOT TO BE INDEXED
 
@@ -68,8 +68,8 @@ Notes:
 - All endpoints accept and return JSON.
 - /api/spotify uses OAuth2 with refresh token flow.
 - Track metadata is cleaned to remove "Remastered", "Live", etc.
-`;
+`
 
 export function GET() {
-  return new Response(docs.trim());
+  return new Response(docs.trim())
 }

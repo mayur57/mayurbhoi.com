@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
+
 import Motif from './motif'
 
 export const Signature = () => {
@@ -17,9 +18,12 @@ export const Signature = () => {
   useEffect(() => {
     let motifTimeout: NodeJS.Timeout
     if (isInView) {
-      motifTimeout = setTimeout(() => {
-        setShowMotif(true)
-      }, (SIGN_FADE_DELAY + SIGN_FADE_DURATION) * 1000)
+      motifTimeout = setTimeout(
+        () => {
+          setShowMotif(true)
+        },
+        (SIGN_FADE_DELAY + SIGN_FADE_DURATION) * 1000
+      )
     }
     return () => {
       if (motifTimeout) clearTimeout(motifTimeout)
@@ -27,24 +31,19 @@ export const Signature = () => {
   }, [isInView])
 
   return (
-    <div
-      ref={ref}
-      className='scale-75 flex flex-col items-center justify-center mt-6'
-    >
+    <div ref={ref} className='scale-75 flex flex-col items-center justify-center mt-6'>
       <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: isInView ? 0 : 1 }}
         transition={{ duration: SIGN_FADE_DURATION, delay: SIGN_FADE_DELAY }}
-        className='dark:invert'
-      >
+        className='dark:invert'>
         <motion.svg
           className='opacity-40'
           width='111'
           height='79'
           viewBox='0 0 111 79'
           fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
+          xmlns='http://www.w3.org/2000/svg'>
           <title>Mayur Bhoi @ mayurbhoi.com</title>
           <motion.path
             initial={{ pathLength: 0 }}
@@ -68,10 +67,11 @@ export const Signature = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: showMotif ? 1 : 0 }}
         transition={{ duration: MOTIF_FADE_DURATION }}
-        style={{ position: 'relative', zIndex: 1, marginTop: '-5rem' }}
-      >
+        style={{ position: 'relative', zIndex: 1, marginTop: '-5rem' }}>
         {showMotif && (
-          <Motif>Be curious. Read widely. Try new things.<br></br>— Aaron Swartz</Motif>
+          <Motif>
+            Be curious. Read widely. Try new things.<br></br>— Aaron Swartz
+          </Motif>
         )}
       </motion.div>
     </div>

@@ -15,8 +15,8 @@ export default function NotFound() {
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
         href='http://www.w3.org/1999/xlink'
-        aria-hidden="true"
-        focusable="false">
+        aria-hidden='true'
+        focusable='false'>
         <mask
           id='mask0_216_4'
           style={{ maskType: 'alpha' }}
