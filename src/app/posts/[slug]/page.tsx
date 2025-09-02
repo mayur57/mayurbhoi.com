@@ -15,7 +15,7 @@ export default async function ExpandedPost(props: any) {
   })
   const post = sortedPosts.find(post => post.metadata.slug === params.slug)
   if (!post) notFound()
-  const { title, description, uploaded } = post?.metadata
+  const { title, description, uploaded, substack } = post?.metadata
   const suggestions = generateSuggestions(sortedPosts, post)
   const uploadDate = formatDate(uploaded)
   const readingMinutes = readingTime(post.content).minutes.toFixed()
@@ -25,8 +25,13 @@ export default async function ExpandedPost(props: any) {
       <div className='prose prose-sm sm:prose dark:prose-invert pt-4'>
         <h1 className='sm:pt-6'>{title}</h1>
         <p className='not-prose opacity-70 text-sm pt-2 pb-1'>{description}</p>
-        <div className='not-prose flex justify-between opacity-50 text-[11px] font-mono font-medium'>
-          {byline}
+        <div className='not-prose flex items-center justify-between'>
+          <span className='opacity-50 text-[11px] font-mono font-medium'>{byline}</span>
+          {typeof substack === 'string' ? (
+          <div className='not-prose flex items-center justify-center font-sans text-xs text-orange-600 dark:text-orange-300 opacity-100'>
+            <a href={substack} target={"_blank"} rel={'noopener noreferrer'}>Also available on Substack ↗</a>
+          </div>
+        ) : null}
         </div>
         <Divider />
         <MDX className='pt-4 pb-6' source={post.content} />

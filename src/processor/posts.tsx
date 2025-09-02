@@ -9,6 +9,7 @@ type Metadata = {
   tag: string
   updated: string
   delist?: boolean | string
+  substack?: boolean | string
 }
 
 function parseFrontmatter(fileContent: string) {
