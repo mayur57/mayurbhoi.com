@@ -28,7 +28,7 @@ export default async function ExpandedPost(props: any) {
         <div className='not-prose flex items-center justify-between'>
           <span className='opacity-50 text-[11px] font-mono font-medium'>{byline}</span>
           {typeof substack === 'string' ? (
-          <div className='not-prose flex items-center justify-center font-sans text-xs text-orange-600 dark:text-orange-300 opacity-100'>
+          <div className='not-prose flex items-center justify-center text-right font-sans text-xs text-orange-600 dark:text-orange-300 opacity-100'>
             <a href={substack} target={"_blank"} rel={'noopener noreferrer'}>Also available on Substack ↗</a>
           </div>
         ) : null}
