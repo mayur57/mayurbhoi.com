@@ -280,8 +280,15 @@
   }
 
   .font-features-all {
-    font-feature-settings: 'calt', 'dlig', 'liga', 'kern', 'ss01', 'ss02', 'ss03', 'ss04', 'ss07',
-      'ss08', 'tnum', 'cv02', 'cv03', 'cv04', 'cv11';
+    font-feature-settings: 'calt', 'dlig', 'liga', 'kern', 'tnum', 'cv02', 'cv03', 'cv04', 'cv10', 'cv11';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
     font-synthesis: none;
     tab-size: 4;
   }

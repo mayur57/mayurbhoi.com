@@ -157,7 +157,7 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
           data.isPlaying && (
             <BlurFade>
               <span className='flex items-center gap-2 pt-[6px] pb-[2px] pl-2 text-xs leading-normal text-gray-500'>
-                <div className='h-2 w-2 bg-green-500 dark:bg-green-200 rounded-full' />
+                <div className='h-2 w-2 bg-green-500 dark:bg-green-00 rounded-full' />
                 Currently playing
               </span>
             </BlurFade>
