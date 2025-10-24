@@ -77,7 +77,7 @@ export default function Home() {
           </div>
 
           <div className={`${stagger(3)} pt-2`}>
-            <p className='chroma-text'>
+            <p>
               Writing impactful & elegant software. Relentlessly devoted to intricacy, efficiency,
               and detailed polish. Unsatisfiably curious about magical design and high performance
               systems.
@@ -85,7 +85,7 @@ export default function Home() {
           </div>
 
           <div className={`${stagger(4)} pt-4`}>
-            <p className='chroma-text'>
+            <p>
               Based in{' '}
               <a href='https://www.google.com/maps/place/Bengaluru,+Karnataka'>Bengaluru, India</a>,
               I have been working as Software Engineer at{' '}
@@ -183,6 +183,13 @@ export default function Home() {
               new things every day to enable me to do what I do better. The web is a blank canvas I
               have only started to paint.
             </p>
+            <p>
+              In my free time, I like to
+              run, cook, play the guitar and occasionally pen my thoughts down on {''}
+              <a title='Substack' href='https://open.substack.com/pub/mayurbhoi'>
+                Substack
+              </a>
+            </p>
             {/* <p className='underline decoration-from-font underline-offset-2'>I am looking for new opportunities!</p> */}
             <SpotifyWidget />
           </div>
@@ -203,8 +210,8 @@ export default function Home() {
                 LinkedIn
               </a>
               ,{' '}
-              <a title='Mayur Bhoi on Peerlist' href='https://peerlist.io/mayurbhoi'>
-                Peerlist
+              <a title='Mayur Bhoi on Substack' href='https://substack.com/@mayurbhoi'>
+                Substack
               </a>
               ,{' '}
               <a title='Mayur Bhoi on Bluesky' href='https://bsky.app/profile/mayurbhoi.com'>
