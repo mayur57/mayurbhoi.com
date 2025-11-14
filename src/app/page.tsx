@@ -184,8 +184,8 @@ export default function Home() {
               have only started to paint.
             </p>
             <p>
-              In my free time, I like to
-              run, cook, play the guitar and occasionally pen my thoughts down on {''}
+              In my free time, I like to run, cook, play the guitar and occasionally pen my thoughts
+              down on {''}
               <a title='Substack' href='https://open.substack.com/pub/mayurbhoi'>
                 Substack
               </a>

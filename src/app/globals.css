@@ -280,7 +280,8 @@
   }
 
   .font-features-all {
-    font-feature-settings: 'calt', 'dlig', 'liga', 'kern', 'tnum', 'cv02', 'cv03', 'cv04', 'cv10', 'cv11';
+    font-feature-settings: 'calt', 'dlig', 'liga', 'kern', 'tnum', 'cv02', 'cv03', 'cv04', 'cv10',
+      'cv11';
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

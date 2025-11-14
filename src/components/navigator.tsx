@@ -10,7 +10,13 @@ const Navigator = () => (
   <nav className='flex w-full gap-4 pb-8 justify-end'>
     <NavigatorItem label='home' href='/' />
     <NavigatorItem label='posts' href='/posts' />
-    <NavigatorItem label='resume' href='/resume.pdf' />
+    <a
+      className={`text-sm sm:text-base tracking-tight`}
+      href='/resume.pdf'
+      target='_blank'
+      rel='noopener noreferrer'>
+      resume
+    </a>
   </nav>
 )
 
