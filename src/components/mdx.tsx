@@ -1,5 +1,4 @@
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { MDXRemote } from 'next-mdx-remote-client/rsc'
 import rehypeHighlight from 'rehype-highlight'
@@ -7,11 +6,13 @@ import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
 import { TweetComponent } from './tweet'
+import { RoundedImage } from './image'
 
 import 'src/app/marker.css'
 
 import Callout from './callout'
 import Code from './code'
+import Quote from './quote'
 
 function Table({ data }: any) {
   const headers = data.headers.map((header: any, index: any) => <th key={index}>{header}</th>)
@@ -46,19 +47,6 @@ function CustomLink(props: any) {
   }
   if (href.startsWith('#')) return <a {...props} />
   return <a target='_blank' rel='noopener noreferrer' {...props} />
-}
-
-function RoundedImage(props: any) {
-  return (
-    <div className={`flex flex-col items-center pt-4 ${props.className}`}>
-      <Image
-        alt={props.alt}
-        className='article-img border rounded-xl dark:border-[#222]'
-        {...props}
-      />
-      <p className='opacity-70 text-xs text-center sm:px-16'>{props.alt}</p>
-    </div>
-  )
 }
 
 function emphasis(props: any) {
@@ -128,6 +116,7 @@ const components = {
   Tweet: TweetComponent,
   Callout,
   Table,
+  Quote,
 }
 
 const options = {
