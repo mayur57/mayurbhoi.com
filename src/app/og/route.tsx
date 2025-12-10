@@ -8,7 +8,6 @@ export async function GET(req: NextRequest): Promise<any> {
   const title = searchParams.get('title')
   const twitter = searchParams.get('twitter')
   const isForTwitter = twitter !== null
-  console.log({ isForTwitter }, { twitter })
   const imageUrl = isForTwitter
     ? 'https://www.mayurbhoi.com/images/og-t.png'
     : 'https://www.mayurbhoi.com/images/og.png'

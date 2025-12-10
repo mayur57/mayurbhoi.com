@@ -7,6 +7,14 @@ const nextConfig = {
       { protocol: 'https', hostname: 'i.scdn.co' },
     ],
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  experimental: {
+    optimizePackageImports: ['date-fns'],
+  },
 }
 
 module.exports = nextConfig
