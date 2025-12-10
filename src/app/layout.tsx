@@ -65,6 +65,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang='en'
       suppressHydrationWarning
       className={`font-features-all ${inter.variable} ${newsreader.variable} ${GeistMono.variable}`}>
+      <head>
+        <link rel='dns-prefetch' href='https://api.spotify.com' />
+        <link rel='dns-prefetch' href='https://accounts.spotify.com' />
+        <link rel='dns-prefetch' href='https://i.scdn.co' />
+        <link rel='dns-prefetch' href='https://ipapi.co' />
+        <link rel='dns-prefetch' href='https://pbs.twimg.com' />
+        <link rel='dns-prefetch' href='https://abs.twimg.com' />
+        <link rel='preconnect' href='https://api.spotify.com' crossOrigin='anonymous' />
+        <link rel='preconnect' href='https://accounts.spotify.com' crossOrigin='anonymous' />
+        <link rel='preconnect' href='https://i.scdn.co' crossOrigin='anonymous' />
+      </head>
       <body className={`w-full bg-white dark:bg-[#18181A] transition-all duration-300 antialiased`}>
         <BlurHeader />
         <Providers>

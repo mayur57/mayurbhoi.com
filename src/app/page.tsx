@@ -96,7 +96,7 @@ export default async function Home() {
           <div
             className={`${stagger(
               5
-            )} flex no-scrollbar overflow-x-scroll gap-2 py-8 xs:[mask-image:linear-gradient(to_right,#000_0,#000_100%)] [mask-image:linear-gradient(to_right,#000_0,#000_75%,transparent_100%)]`}>
+            )} flex no-scrollbar overflow-x-scroll gap-2 py-8 xs:[mask-image:linear-gradient(to_right,#000_0,#000_100%)] mask-[linear-gradient(to_right,#000_0,#000_75%,transparent_100%)]`}>
             <div className='w-[210px] sm:w-[250px] shrink-0 pr-10 sm:m-0'>
               <p className='opacity-60 text-sm font-medium tracking-tight'>Building</p>
               <div className='flex flex-col gap-6'>

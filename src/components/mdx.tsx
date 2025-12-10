@@ -84,7 +84,7 @@ function createHeading(level: number) {
 }
 
 function Divider() {
-  return <div className='h-[1px] w-full bg-black opacity-10 dark:bg-white my-8' />
+  return <div className='h-px w-full bg-black opacity-10 dark:bg-white my-8' />
 }
 
 function Strong(props: any) {
