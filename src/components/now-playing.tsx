@@ -93,7 +93,7 @@ function SpotifyWidgetError({ message = 'Could not fetch data' }) {
 function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
   return (
     <div
-      className={`player relative not-prose flex flex-col p-1 rounded-[18px] my-10 max-h-[7.5rem] justify-center ${
+      className={`player relative not-prose flex flex-col p-1 rounded-[18px] my-10 max-h-30 justify-center ${
         error
           ? 'bg-red-100 dark:bg-red-900 border border-red-500 dark:border-red-700'
           : 'bg-[#EAEEEA] dark:bg-[#0E0E0E] border dark:border-[#131313]'
@@ -127,7 +127,7 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
         )}
         <div className={`flex flex-col justify-center ${data.isPlaying && '-translate-x-10'}`}>
           <BlurFade>
-            <h3 className='text-sm !font-medium !tracking-tight'>{data.title}</h3>
+            <h3 className='text-sm font-medium! tracking-tight!'>{data.title}</h3>
           </BlurFade>
           <BlurFade>
             <p className='text-xs opacity-70'>{data.artist}</p>
