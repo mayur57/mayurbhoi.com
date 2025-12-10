@@ -18,7 +18,7 @@ export function RoundedImage(props: RoundedImageProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  const imgRef = useRef<HTMLImageElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -53,7 +53,7 @@ export function RoundedImage(props: RoundedImageProps) {
           touch2.clientX - touch1.clientX,
           touch2.clientY - touch1.clientY
         )
-        ;(imgRef.current as any).pinchDistance = distance
+        ;(containerRef.current as any).pinchDistance = distance
       }
     } else if (e.touches.length === 1 && e.touches[0]) {
       setIsDragging(true)
@@ -75,12 +75,12 @@ export function RoundedImage(props: RoundedImageProps) {
           touch2.clientY - touch1.clientY
         )
         
-        const pinchDistance = (imgRef.current as any).pinchDistance
+        const pinchDistance = (containerRef.current as any).pinchDistance
         if (pinchDistance) {
           const delta = (distance - pinchDistance) * 0.01
           const newScale = Math.min(Math.max(1, scale + delta), 5)
           setScale(newScale)
-          ;(imgRef.current as any).pinchDistance = distance
+          ;(containerRef.current as any).pinchDistance = distance
           
           if (newScale === 1) {
             setPosition({ x: 0, y: 0 })
@@ -169,14 +169,15 @@ export function RoundedImage(props: RoundedImageProps) {
             </svg>
           </button>
 
-          <img
-            ref={imgRef}
-            alt={props.alt}
-            src={props.src}
-            className="max-w-[90vw] max-h-[90vh] object-contain select-none transition-transform duration-150 ease-out"
+          <div
+            ref={containerRef}
+            className="relative max-w-[90vw] max-h-[90vh] select-none transition-transform duration-150 ease-out"
             style={{
               transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-              cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'
+              cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+              width: props.width ? `${props.width}px` : '90vw',
+              height: props.height ? `${props.height}px` : 'auto',
+              aspectRatio: props.width && props.height ? `${props.width} / ${props.height}` : 'auto',
             }}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
@@ -186,8 +187,19 @@ export function RoundedImage(props: RoundedImageProps) {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={() => setIsDragging(false)}
-            draggable={false}
-          />
+          >
+            <Image
+              alt={props.alt}
+              src={props.src}
+              width={props.width || 1920}
+              height={props.height || 1080}
+              className="object-contain w-full h-auto"
+              quality={90}
+              priority
+              sizes="90vw"
+              unoptimized={props.src.startsWith('http')}
+            />
+          </div>
         </div>
       )}
     </>
