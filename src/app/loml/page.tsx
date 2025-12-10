@@ -1,6 +1,14 @@
 import { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 
-import ThreeScene from './scene'
+const ThreeScene = dynamic(() => import('./scene'), {
+  ssr: false,
+  loading: () => (
+    <div className='absolute inset-0 flex items-center justify-center bg-black text-white z-20'>
+      <div className='text-sm'>Loading...</div>
+    </div>
+  ),
+})
 
 export const metadata: Metadata = {
   title: 'The Love of My Life',
