@@ -2,8 +2,6 @@ import React from 'react'
 import Link from 'next/link'
 import { MDXRemote } from 'next-mdx-remote-client/rsc'
 import rehypeHighlight from 'rehype-highlight'
-import rehypeKatex from 'rehype-katex'
-import remarkMath from 'remark-math'
 
 import { TweetComponent } from './tweet'
 import { RoundedImage } from './image'
@@ -99,7 +97,7 @@ function InlineCode(props: any) {
   )
 }
 
-const components = {
+export const components = {
   h1: createHeading(1),
   h2: createHeading(2),
   h3: createHeading(3),
@@ -119,14 +117,25 @@ const components = {
   Quote,
 }
 
+function hasMathContent(content: string): boolean {
+  return /(\$\$|\\\[|\\\]|\$[^$]+\$)/.test(content)
+}
+
 const options = {
   mdxOptions: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeHighlight, rehypeKatex],
+    remarkPlugins: [] as any[],
+    rehypePlugins: [rehypeHighlight] as any[],
   },
 }
 
-export function MDX(props: any) {
+export async function MDX(props: any) {
+  const hasMath = hasMathContent(props.source || '')
+  
+  if (hasMath) {
+    const { MDXWithMath } = await import('./mdx-with-math')
+    return <MDXWithMath {...props} />
+  }
+
   return (
     <div className={props.className}>
       <MDXRemote
