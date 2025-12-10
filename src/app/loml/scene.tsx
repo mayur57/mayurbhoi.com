@@ -67,16 +67,18 @@ export default function ThreeScene() {
     }
     animate()
 
+    const mountElement = mountRef.current
+
     const handleResize = () => {
-      if (!mountRef.current) return
-      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight
+      if (!mountElement) return
+      camera.aspect = mountElement.clientWidth / mountElement.clientHeight
       camera.updateProjectionMatrix()
-      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight)
+      renderer.setSize(mountElement.clientWidth, mountElement.clientHeight)
     }
     window.addEventListener('resize', handleResize)
 
     return () => {
-      if (mountRef.current) mountRef.current.removeChild(renderer.domElement)
+      if (mountElement) mountElement.removeChild(renderer.domElement)
       window.removeEventListener('resize', handleResize)
     }
   }, [])

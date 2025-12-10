@@ -129,20 +129,22 @@ export function RoundedImage(props: RoundedImageProps) {
     }
   }
 
+  const { alt, className, ...imageProps } = props
+
   return (
     <>
-      <div className={`flex flex-col items-center pt-4 ${props.className || ''}`}>
+      <div className={`flex flex-col items-center pt-4 ${className || ''}`}>
         <div 
           className="cursor-zoom-in"
           onClick={() => setIsOpen(true)}
         >
           <Image
-            // alt={props.alt || ''}
+            alt={alt || ''}
             className='article-img border rounded-xl dark:border-[#222]'
-            {...props}
+            {...imageProps}
           />
         </div>
-        <p className='opacity-70 text-xs text-center sm:px-16'>{props.alt}</p>
+        <p className='opacity-70 text-xs text-center sm:px-16'>{alt}</p>
       </div>
 
       {isOpen && (
