@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export const revalidate = 0
+export const revalidate = 30
 
 const client_id = process.env['SPOTIFY_CLIENT_ID']
 const client_secret = process.env['SPOTIFY_CLIENT_SECRET']

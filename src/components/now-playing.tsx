@@ -190,7 +190,9 @@ function SpotifyWidget() {
         setLoading(false)
       }
     }
-    fetchSpotifyData()
+    
+    const timeout = setTimeout(fetchSpotifyData, 100)
+    return () => clearTimeout(timeout)
   }, [])
   if (process.env['SPOTIFY_CLIENT_ID'] === null || process.env['SPOTIFY_CLIENT_SECRET'] === null)
     return null

@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server'
 import { kv } from '@vercel/kv'
 
+export const revalidate = 300
+
 export async function GET() {
   try {
     const location = (await kv.get('user_location')) || 'somewhere on Earth'

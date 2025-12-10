@@ -51,7 +51,7 @@ const featuredPosts = getPosts()
   })
   .slice(0, 2)
 
-export default function Home() {
+export default async function Home() {
   return (
     <MainLayout>
       <div className='sm:prose dark:prose-invert prose prose-sm -mt-4 sm:mt-0 perspective-[1000px]'>
