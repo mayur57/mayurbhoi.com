@@ -100,10 +100,10 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
       }`}>
       <a
         href={data.url}
-        className='flex flex-row gap-4 p-2 bg-white dark:bg-[#18181A] rounded-[14px] overflow-hidden shadow-sm'>
+        className='flex flex-row items-center gap-4 p-2 bg-white dark:bg-[#18181A] rounded-[14px] overflow-hidden shadow-sm'>
         {data.isPlaying ? (
           <VinylRecord
-            className='-translate-x-12 -translate-y-5'
+            className='-translate-x-12 '
             spin={data.isPlaying}
             size={110}
             label={
@@ -112,7 +112,7 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
                 height={64}
                 width={64}
                 alt='Album Cover'
-                className='w-14 h-14 object-fit rounded-full'
+                className='w-14 h-14 object-cover rounded-full'
               />
             }
           />
@@ -125,15 +125,15 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
             className='w-16 h-16 rounded-[8px]'
           />
         )}
-        <div className={`flex flex-col justify-center ${data.isPlaying && '-translate-x-10'}`}>
+        <div className={`flex min-w-0 flex-1 flex-col justify-center pr-8 ${data.isPlaying && '-translate-x-10'}`}>
           <BlurFade>
-            <h3 className='text-sm !font-medium !tracking-tight'>{data.title}</h3>
+            <h3 className='truncate text-sm !font-medium !tracking-tight'>{data.title}</h3>
           </BlurFade>
           <BlurFade>
-            <p className='text-xs opacity-70'>{data.artist}</p>
+            <p className='truncate text-xs opacity-70'>{data.artist}</p>
           </BlurFade>
           <BlurFade>
-            <p className='text-xs opacity-50'>{data.album}</p>
+            <p className='truncate text-xs opacity-50'>{data.album}</p>
           </BlurFade>
         </div>
       </a>
@@ -156,8 +156,8 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
         ) : (
           data.isPlaying && (
             <BlurFade>
-              <span className='flex items-center gap-2 pt-[6px] pb-[2px] pl-2 text-xs leading-normal text-gray-500'>
-                <div className='h-2 w-2 bg-green-500 dark:bg-green-00 rounded-full' />
+              <span className='flex items-center gap-2 pt-[6px] pb-[2px] pl-1.5 text-xs leading-normal text-gray-500'>
+                <div className='h-2 w-2 bg-green-500 dark:bg-green-400 rounded-full' />
                 Currently playing
               </span>
             </BlurFade>

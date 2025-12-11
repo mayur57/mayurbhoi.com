@@ -20,15 +20,15 @@ export const metadata: Metadata = {}
 
 const featuredProjects: Array<FeaturedProject> = [
   {
+    title: 'Namma Shuttle',
+    description: 'Planned BLR airport commute using shuttle service',
+    repo: 'https://nammashuttle.com',
+  },
+  {
     title: 'Twitter Nuke',
     description: 'Tool to bulk delete tweets using Twitter Archive',
     repo: 'https://github.com/Mayur57/twitter-nuke',
-  },
-  {
-    title: 'Reflect',
-    description: 'A safe space for people to look back at their year',
-    repo: 'https://reflectly.vercel.app?ref=mayurbhoi.com',
-  },
+  }
 ]
 
 const workingOn: Array<FeaturedProject> = [
@@ -36,12 +36,7 @@ const workingOn: Array<FeaturedProject> = [
     title: 'Vertex',
     description: 'Fast URL shortening service with intelligent tracking',
     repo: 'https://www.vrx.li/waitlist',
-  },
-  {
-    title: 'statsd',
-    description: 'Real-time server metrics streaming daemon',
-    repo: 'https://github.com/Mayur57/statsd',
-  },
+  }
 ]
 
 const featuredPosts = getPosts()
@@ -97,7 +92,7 @@ export default function Home() {
             className={`${stagger(
               5
             )} flex no-scrollbar overflow-x-scroll gap-2 py-8 xs:[mask-image:linear-gradient(to_right,#000_0,#000_100%)] [mask-image:linear-gradient(to_right,#000_0,#000_75%,transparent_100%)]`}>
-            <div className='w-[210px] sm:w-[250px] shrink-0 pr-10 sm:m-0'>
+            <div className='w-[210px] sm:w-[260px] shrink-0 pr-10 sm:m-0'>
               <p className='opacity-60 text-sm font-medium tracking-tight'>Building</p>
               <div className='flex flex-col gap-6'>
                 {workingOn?.map((project, index) => (
@@ -117,7 +112,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className='w-[210px] sm:w-[250px] shrink-0 pr-10'>
+            <div className='w-[210px] sm:w-[260px] shrink-0 pr-10'>
               <p className='opacity-60 text-sm font-medium tracking-tight'>Projects</p>
               <div className='flex flex-col gap-6'>
                 {featuredProjects?.map((project, index) => (
@@ -142,7 +137,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className='w-[210px] sm:w-[250px] shrink-0 pr-10 mr-12'>
+            <div className='w-[210px] sm:w-[260px] shrink-0 pr-10 mr-12'>
               <p className='opacity-60 text-sm font-medium tracking-tight'>Writing</p>
               <div className='flex flex-col gap-6'>
                 {featuredPosts?.map((post, index) => (

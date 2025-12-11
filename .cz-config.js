@@ -11,6 +11,7 @@ module.exports = {
     { value: 'perf', name: 'perf:     Performance improvements' },
     { value: 'revert', name: 'revert:   Revert changes' },
     { value: 'ci', name: 'ci:       CI/CD changes' },
+    { value: 'blog', name: 'blog:     Blog post published' },
   ],
   allowCustomScopes: true,
   allowBreakingChanges: ['feat', 'fix'],
