@@ -34,9 +34,14 @@ const featuredProjects: Array<FeaturedProject> = [
 const workingOn: Array<FeaturedProject> = [
   {
     title: 'Vertex',
-    description: 'Fast URL shortening service with intelligent tracking',
-    repo: 'https://www.vrx.li/waitlist',
-  }
+    description: 'Precision URL routing built for reliability. Deployed at scale.',
+    repo: 'https://www.vrx.li',
+  },
+  {
+    title: 'Pitwall',
+    description: 'Everything a Formula 1 fan needs at a glance.',
+    repo: 'https://www.pitwall.fyi',
+  },
 ]
 
 const featuredPosts = getPosts()
