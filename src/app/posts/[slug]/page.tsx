@@ -22,7 +22,7 @@ export default async function ExpandedPost(props: any) {
   const byline = generateByline(uploadDate, readingMinutes)
   return (
     <MainLayout>
-      <div className='prose prose-sm sm:prose dark:prose-invert pt-4'>
+      <div className='prose prose-sm sm:prose dark:prose-invert pt-4 animate-fade-up'>
         <h1 className='sm:pt-6'>{title}</h1>
         <p className='not-prose opacity-70 text-sm pt-2 pb-1'>{description}</p>
         <div className='not-prose flex items-center justify-between'>

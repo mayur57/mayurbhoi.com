@@ -67,7 +67,7 @@ export default function ProjectsPage() {
                 <span className='text-gray-500'>{project.year}</span>
               </div>
               <p className='leading-relaxed text-gray-700 mb-6'>{project.description}</p>
-              <p className='text-xs'>{project.rating}%</p>
+              <p className='text-xs text-gray-700'>{project.rating}%</p>
             </div>
             <div className='w-full'>
               <Image

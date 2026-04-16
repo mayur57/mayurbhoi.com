@@ -3,7 +3,6 @@ import MainLayout from 'src/components/main-layout'
 import { Socials } from 'src/components/socials'
 import Title from 'src/components/title'
 import { getPosts } from 'src/processor/posts'
-import { stagger } from 'src/utils/functions'
 
 import PostTile from './post'
 
@@ -36,7 +35,7 @@ export default function PostsPage() {
     <MainLayout>
       <Title>posts</Title>
       <div className='pt-4 pb-24'>
-        <div className={`pt-4 appear ${stagger(1)}`}>
+        <div className={`pt-4 animate-fade-up`}>
           {blogs.map((post, index) => (
             <PostTile key={index} post={post.metadata} index={index} />
           ))}

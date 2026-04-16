@@ -1,0 +1,373 @@
+---
+title: Trying to Solve One of Bengaluru's Problems
+description: Working with maps isn't as easy as I thought it was
+slug: bengaluru-airport-problem
+uploaded: 2026-04-14
+tag: abstract
+updated: 2026-04-14
+---
+
+It's 4:15am. You have your usual taxi apps open, with airport 35km away, and flight at 6. The estimate is ₹1,300 before surge.
+
+_**Ridiculous.**_
+
+You close the apps, tell yourself you'll take the bus, open the BMTC portal to check the timings, and it times out. You find a PDF timetable from 2021 on some civic data repository, cross-reference it with a Google Maps route that puts the stop in the middle of a divider, and give up. Open the cab app again. ₹1,600 now. By this time, you are late for taking a bus and take the overpriced cab unwillingly.
+
+That happened to me three times before I decided to just build the thing I wanted.
+
+KIA has 24 BMTC Vayu Vajra routes covering most of the city. The buses are air-conditioned, reasonably punctual, and a fraction of the cab fare. The problem is entirely informational: no reliable way to know which route serves your area, where exactly to board, or whether you'll make your flight if you take the 4:30.
+
+So, as a typical Bengaluru techbro would, I built a web app with an interactive map, real stop coordinates, geolocation to find your nearest stop, and a flight planner that works backward from your departure time to tell you which bus to catch.
+
+So, I lied. This isn't about solving the commute from city interiors to the KIA airport. This article is about me tricking you into learning about the technical problems I faced while trying to formalise the BMTC data for layman to use.
+
+Buckle up.
+
+---
+
+## Gathering Reliable Data
+
+The first question with any transit app is: where does the data come from?
+
+BMTC has an API. It's not public, not documented, and requires knowing internal route IDs. But [bengawalk](https://github.com/bengawalk/kia) had already reverse-engineered it and scraped the stop data for all KIA routes into a clean set of JSON files. 24 routes, each with a `UP` and `DOWN` direction file, each file containing an array of stops with station names and GPS coordinates.
+
+The structure looked like this:
+
+```json
+{
+  "up": {
+    "data": [
+      {
+        "stationid": 35189,
+        "stationname": "HAL Main Gate",
+        "centerlat": 12.95852,
+        "centerlong": 77.66629
+      }
+    ]
+  }
+}
+```
+
+Straightforward enough. The complication: BMTC's concept of "UP" doesn't consistently mean "toward the airport." For most routes it does. For KIA-7, KIA-14, KIA-15A, and KIA-8EW, the UP direction goes *away* from the airport. So you can't blindly pick the UP file. You have to check which direction's last stop matches the airport name and use that.
+
+```js
+for (const key of ['up', 'down']) {
+  const data = raw[key]?.data ?? []
+  if (data.length === 0) continue
+  const last = data[data.length - 1].stationname
+  if (/Kempegowda International Airport/i.test(last)) return data
+}
+```
+
+Small thing, but it would have silently reversed the stop order for four routes. It is still not as good as I would like to be. I am pondering about having segregated lists of UP and DOWN bus routes so that people can estimate their arrival to the city too. The data still isn't perfect, so I _could_ accomodate this when I find a better way to enrich the data.
+
+## GeoJSON and the Coordinate Swap
+
+Stop data gives you points. To draw the route on a map, you need the line the bus actually travels, following roads. That's where the GeoJSON files come in.
+
+GeoJSON is a standard format for geographic data. A route polyline is a `LineString` feature whose `coordinates` array contains every point along the path. A polyline simply means a line segment with multiple vertices or "stops" in between. This is how a practical `Polyline` object is structured for the app:
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [{
+    "type": "Feature",
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [77.66629, 12.95847],
+        [77.66633, 12.95880]
+      ]
+    }
+  }]
+}
+```
+
+Notice the order: `[longitude, latitude]`. GeoJSON specifies coordinates as `[lng, lat]` because that's `[x, y]` in Cartesian terms. Leaflet.js, the mapping library, expects `[lat, lng]`. These are opposite. Load GeoJSON coordinates directly into Leaflet and every point lands in the Atlantic Ocean.
+
+The fix is one line, but you have to know it:
+
+```js
+const coords = geo.features[0].geometry.coordinates
+return coords.map(([lng, lat]) => [lat, lng])
+```
+
+**I found it the hard way.**
+
+The raw route files had around 1,300 coordinate pairs per route. Across 24 routes, that's 37,000+ points to render on every map load. That's too many. This present a completely new problem.
+
+## Ramer-Douglas-Peucker Simplification
+
+While not having enough is usually the problem for charting and graphing--in our case having too many data points was a major performance bottleneck. Our data needed sanitation and simplification. Polyline simplification is the problem of reducing the number of points in a curve while preserving its shape. The standard algorithm for this is [Ramer-Douglas-Peucker (RDP)](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm).
+
+The idea is recursive. Given a polyline, draw a straight line from the first point to the last. Measure the perpendicular distance from every intermediate point to that line. If the maximum distance is below a threshold epsilon, discard all intermediate points — the straight line is close enough. If not, split at the furthest point and recurse on both halves.
+
+```
+         *
+        / \
+       /   \
+      /     *------*
+     /              \
+*---*                *---*
+```
+
+If that middle cluster of points is all within epsilon of the baseline, they collapse to just the two endpoints.
+
+The perpendicular distance from point $p$ to line $(S, E)$ is:
+
+$$
+d = \frac{\left| d_y p_x - d_x p_y + x_{\text{E}} y_{\text{S}} - y_{\text{E}} x_{\text{S}} \right|}{\sqrt{d_x^2 + d_y^2}}
+$$
+
+where $d_x = x_{\text{e}} - x_{\text{s}}$ and $d_y = y_{\text{e}} - y_{\text{s}}$.
+
+With epsilon at $\epsilon = 0.00015$ degrees (roughly 15 meters on the ground at Bengaluru's latitude), 37,721 points compressed to 2,756. That's 93% reduction while keeping the routes visually accurate at any zoom level you'd actually use.
+
+## The Floating-Point Trap
+
+After compiling the data with the JS script, I verified the output against an equivalent Python script I wrote separately. 506 of 507 checks passed. One failed:
+
+```
+✗ Path first point: [12.97647,77.72684]
+  → JS=[12.97647,77.72684] PY=[12.97646,77.72684]
+```
+
+One digit off in the fifth decimal place. About one millimeter on the ground. Irrelevant in practice but wrong in principle, and I wanted the outputs to be reproducible across languages.
+
+The cause: Python's `round()` uses **banker's rounding** (round-half-to-even). When a value lands exactly on the 0.5 boundary after scaling, it rounds to the nearest *even* digit. So `12.976465 * 100000 = 1297646.5` rounds to `1297646` (even). JavaScript's `Math.round()` always rounds 0.5 up, so it gives `1297647`.
+
+The fix was implementing banker's rounding in JS:
+
+```js
+function roundHalfEven(value, dp) {
+  const factor = 10 ** dp
+  const scaled = value * factor
+  const floor  = Math.floor(scaled)
+  const frac   = scaled - floor
+  if (Math.abs(frac - 0.5) < Number.EPSILON) {
+    return (floor % 2 === 0 ? floor : floor + 1) / factor
+  }
+  return Math.round(scaled) / factor
+}
+```
+
+After that: 507/507.
+
+## Map Rendering
+
+The mapping stack is Leaflet + react-leaflet. Leaflet is a 40KB JavaScript library for interactive maps. react-leaflet wraps it in React components.
+
+The first thing Leaflet needs is a tile layer — a source of map images. OpenStreetMap provides free tiles:
+
+```jsx
+<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+```
+
+The tiles are served as 256x256 PNG images indexed by zoom level and tile coordinates. At zoom 11 (city level), you're looking at maybe 20x20 tiles covering Bengaluru. Leaflet handles the math of which tiles to request based on viewport position and zoom.
+
+The dark theme is a CSS filter trick. OpenStreetMap tiles are light-colored by default. There's no dark mode tile option in the free tier. But you can apply a CSS filter to the tile layer:
+
+```css
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.82) saturate(0.65);
+}
+```
+
+`invert(1)` flips all colors. `hue-rotate(180deg)` rotates the hue to cancel the inversion's color distortion on things like roads and water. Brightness and saturation bring it closer to a proper dark map. Not perfect, but good enough and costs nothing.
+
+**Polylines** are rendered using Leaflet's `Polyline` component. Each route's path is an array of `[lat, lng]` pairs:
+
+```jsx
+<Polyline
+  positions={route.path}
+  pathOptions={{ color: route.color, weight: 3, opacity: 0.9 }}
+/>
+```
+
+**Stop markers** use `CircleMarker` instead of the default pin icon. CircleMarker is just a circle drawn in SVG at a lat/lng position. It scales cleanly at all zoom levels and is cheaper to render than custom icons:
+
+```jsx
+<CircleMarker
+  center={[stop.lat, stop.lng]}
+  radius={5}
+  pathOptions={{ fillColor: route.color, fillOpacity: 1, color: '#000', weight: 1 }}
+/>
+```
+
+When a route is selected, the map needs to zoom to fit it. Leaflet has `fitBounds` and `flyToBounds`. The difference: `fitBounds` jumps instantly, `flyToBounds` animates. The bounds are calculated from the route's path coordinates:
+
+```js
+const lats = route.path.map(p => p[0])
+const lngs = route.path.map(p => p[1])
+map.flyToBounds(
+  [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]],
+  { padding: [60, 60], duration: 1.2 }
+)
+```
+
+There's a React-specific catch: Leaflet accesses `window` and `document` directly, which breaks server-side rendering. In Next.js, you fix this with dynamic imports:
+
+```js
+const TransitMap = dynamic(() => import('@/components/TransitMap'), { ssr: false })
+```
+
+This tells Next.js to skip the component during SSR and only load it in the browser.
+
+## Handling Geolocation and Nearest Stops
+
+The browser Geolocation API is a single call:
+
+```js
+navigator.geolocation.getCurrentPosition(
+  ({ coords }) => {
+    setUserLocation({ lat: coords.latitude, lng: coords.longitude })
+  },
+  (err) => { /* handle denial */ },
+  { timeout: 10000 }
+)
+```
+
+The interesting part is finding the nearest stops. The naive approach is computing the distance from the user's location to every stop across all routes. With 803 stops across 24 routes, that's 803 distance calculations. Fast enough that optimization isn't needed here, but the distance function matters.
+
+Straight-line distance on a flat plane doesn't work for geographic coordinates. A degree of latitude is always about 111km. A degree of longitude varies by latitude: at Bengaluru's latitude (~13°N), it's about 108km. The flat-earth calculation would be slightly off and produce wrong rankings at the margins.
+
+The correct formula is **haversine distance**, which accounts for the Earth's curvature:
+
+```js
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+```
+
+This gives distance in kilometers. At these distances (typically under 5km for a nearest-stop search), it's accurate to within meters.
+
+One deduplication issue: the same physical stop can appear in multiple routes. "Hebbal Flyover" serves KIA-4, KIA-9, KIA-10, and others. Without deduplication, the nearest-stop list returns the same location five times. The fix is tracking seen coordinates:
+
+```js
+const seen = new Set()
+for (const route of busRoutes) {
+  for (const stop of route.stops) {
+    const key = `${stop.lat},${stop.lng}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    results.push({ stop, route, distance: haversine(lat, lng, stop.lat, stop.lng) })
+  }
+}
+```
+
+## Flight Departure Estimations
+
+The planner answers: given a flight at time T, which bus departure should I take?
+
+The calculation is a subtraction:
+
+$$
+\text{slack} = t_{\text{flight}} - \bigl(t_{\text{departure}} + t_{\text{journey}}\bigr)
+$$
+
+$slack$ is how many minutes you'd have at the airport before your flight. You want enough slack to clear check-in, security, and boarding. The buffer requirements differ by flight type:
+
+<Table
+  data={{
+    headers: ['Flight type', 'Minimum', 'Recommended', 'Safe'],
+    rows: [
+      ['Domestic', '60 min', '90 min', '120 min'],
+      ['International', '120 min', '180 min', '210 min'],
+    ],
+  }}
+/>
+
+Each scheduled departure gets categorized based on slack:
+
+```js
+if (slack < buf.minimum)          practicality = 'toolate'
+else if (slack < buf.recommended) practicality = 'tight'
+else if (slack <= buf.safe + 30)  practicality = 'recommended'
+else if (slack <= buf.safe + 90)  practicality = 'good'
+else                              practicality = 'early'
+```
+
+The schedule data for each route is a manually curated array of departure times. The BMTC API responses contain `sch_departuretime` fields per vehicle, but these are snapshots of where specific buses were at the time of the API call, not a full timetable. They give you a sense of frequency but not a reliable ordered schedule. For the planner to be useful, the departure times need to be hand-verified against the actual BMTC timetable.
+
+## Data Parsing
+
+The compilation step turns three directories of raw files into a single typed JSON:
+
+<Image
+  src='/images/posts/bengaluru-airport-problem/route-compilation.svg'
+  alt='Compilation of raw geolocation data for each route.'
+  width={1280}
+  height={727}
+  quality={100}
+/>
+
+For each route, the script:
+
+1. Reads both UP and DOWN stop files, picks the direction ending at the airport
+2. Deduplicates stops by `stationid`
+3. Reads the GeoJSON file, swaps `[lng, lat]` to `[lat, lng]`
+4. Runs RDP simplification on the path
+5. Applies banker's rounding to 5 decimal places
+6. Merges with static metadata (fare, duration, color, schedule)
+7. Outputs one object per route
+
+The output is 285KB of JSON. That gets imported directly into the Next.js app as a TypeScript constant. No API calls at runtime. No database. The data is just there, bundled with the app.
+
+This works at this scale. 24 routes, 803 stops, 2,756 path points. If you were building for an entire city's bus network, you'd want a tile server, lazy loading, and spatial indexing. For a focused tool covering one airport, static data is the right call.
+
+## The Beauty of Open Source
+
+The bengawalk/kia repo is MIT licensed. The underlying BMTC API data is public in the sense that the API is what powers their own web portal. The stop names, coordinates, and route shapes were collected by querying BMTC's own servers.
+
+There's a recurring pattern in civic tech: official data exists somewhere, it's just inaccessible. The agency has it, uses it internally, but never publishes it in a usable form. Someone scrapes it, publishes the scrape, and suddenly it's useful. This is what happened here.
+
+The bengawalk team did the hard part. Figuring out undocumented API endpoints, writing the collection scripts, cleaning the data, and publishing it. The work here was building the interface on top of it.
+
+---
+
+## Stuff to Improve
+
+**Tile the path data.** Right now all 24 routes load on page open. At city scale, you'd switch to vector tiles, loading only what's visible in the current viewport.
+
+**Mobile Views.** Honestly, I did not have the will strong enough to optimise the website for pinch and zoom dynamics or responsiveness. I don't think that optimising for mobile devices is a waste but if I entered the abyss, this would have never shipped. Certainly one day it will be optimised for mobile devices but that day isn't today.
+
+**Extract real departure schedules from the API.** The BMTC API returns `sch_departuretime` per vehicle per stop. With a full sweep of all stops across a day, you could reconstruct an actual timetable rather than manually curating times.
+
+**Add service day filtering.** Some routes run reduced frequency on Sundays. The current data doesn't capture this.
+
+**GTFS.** The [General Transit Feed Specification](https://gtfs.org/) is a standard format for transit data: agencies, routes, trips, stop times, shapes. Everything I built by hand here, from parsing stops, to building schedules, and encoding paths, has standardized field names in GTFS. If BMTC ever published a GTFS feed, plugging it into this app would take a day. Worth knowing the standard exists and designing toward it.
+
+The app works. It tells you which bus to take and when. That was the goal. Everything else is refinement. Try it out:
+
+<a
+  href='https://nammashuttle.com'
+  target='_blank'
+  rel='noopener noreferrer'
+  className='not-prose mt-4 inline-flex items-stretch no-underline transition-transform duration-200 hover:-translate-y-0.5'
+>
+  <span
+    className='inline-flex h-16 w-16 shrink-0 items-center justify-center sm:h-20 sm:w-20'
+    style={{ backgroundColor: '#F7CA45' }}
+  >
+    <svg
+      aria-hidden='true'
+      viewBox='0 0 24 24'
+      className='h-8 w-8 text-black sm:h-10 sm:w-10'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2.8'>
+      <path d='M7 17L17 7' />
+      <path d='M8 7h9v9' />
+    </svg>
+  </span>
+  <span className='inline-flex items-center bg-white px-5 sm:px-7 text-3xl sm:text-5xl font-semibold tracking-tight text-black'>
+    NammaShuttle
+  </span>
+</a>
