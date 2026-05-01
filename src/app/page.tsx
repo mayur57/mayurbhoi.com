@@ -33,14 +33,14 @@ const featuredProjects: Array<FeaturedProject> = [
 
 const workingOn: Array<FeaturedProject> = [
   {
-    title: 'Vertex',
-    description: 'Precision URL routing built for reliability. Deployed at scale.',
-    repo: 'https://www.vrx.li',
+    title: 'Relay',
+    description: 'Kafka-esque task queue for mission critical systems',
+    repo: 'https://relay.mayurbhoi.com',
   },
   {
-    title: 'Pitwall',
-    description: 'Everything a Formula 1 fan needs at a glance.',
-    repo: 'https://www.pitwall.fyi',
+    title: 'Vertex',
+    description: 'Precision URL routing built for reliability; deployed at scale',
+    repo: 'https://www.vrx.li',
   },
 ]
 
