@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
       }
     )
-  } catch (error) {
+  } catch {
     return new Response(
       JSON.stringify({ error: 'Failed to fetch stats' }),
       {

@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const location = (await kv.get('user_location')) || 'somewhere on Earth'
     return new Response(JSON.stringify({ location }), { status: 200 })
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({ error: 'Failed to fetch location' }), {
       status: 500,
     })
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     await kv.set('user_location', `${city}, ${country}`)
     void logVisit(city, country).catch(() => {})
     return new Response(JSON.stringify({ message: 'Location updated' }), { status: 200 })
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({ error: 'Failed to update location' }), {
       status: 500,
     })

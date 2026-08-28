@@ -178,13 +178,26 @@ function SpotifyWidget() {
       try {
         const res = await fetch('/api/spotify')
         if (!res.ok) {
-          throw new Error('Failed to fetch data')
+          let errorBody: { error?: string; details?: string } | null = null
+          try {
+            errorBody = await res.json()
+          } catch {
+            errorBody = { error: await res.text() }
+          }
+          console.error('[spotify widget] API request failed:', {
+            status: res.status,
+            statusText: res.statusText,
+            body: errorBody,
+          })
+          const message =
+            errorBody?.details || errorBody?.error || `Failed to fetch data (${res.status})`
+          throw new Error(message)
         }
         const result: Song = await res.json()
         setData(result)
         setError({ status: false, message: null })
       } catch (err: any) {
-        console.error(err)
+        console.error('[spotify widget] Failed to load Spotify data:', err)
         setError({ status: true, message: err.message })
       } finally {
         setLoading(false)
