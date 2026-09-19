@@ -1,4 +1,4 @@
-const nextConfig = require('eslint-config-next');
+const nextConfig = require('eslint-config-next')
 
 module.exports = [
   ...nextConfig,
@@ -7,8 +7,8 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts', '**/*.d.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'error',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
       'react-hooks/set-state-in-effect': 'off',
     },
   },
-];
+]

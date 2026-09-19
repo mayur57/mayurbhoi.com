@@ -7,7 +7,7 @@ import { Photo } from 'src/components/photo'
 import { LocalTime } from 'src/components/time'
 import { Venn } from 'src/components/venn'
 import { LastVisitor } from 'src/components/visitor'
-import { getPosts } from 'src/processor/posts'
+import { getListedPosts } from 'src/processor/posts'
 import { stagger } from 'src/utils/functions'
 
 type FeaturedProject = {
@@ -28,7 +28,7 @@ const featuredProjects: Array<FeaturedProject> = [
     title: 'Twitter Nuke',
     description: 'Tool to bulk delete tweets using Twitter Archive',
     repo: 'https://github.com/Mayur57/twitter-nuke',
-  }
+  },
 ]
 
 const workingOn: Array<FeaturedProject> = [
@@ -44,14 +44,8 @@ const workingOn: Array<FeaturedProject> = [
   },
 ]
 
-const featuredPosts = getPosts()
-  .filter(post => post.metadata.delist === undefined)
-  .sort((a, b) => {
-    return new Date(a.metadata.uploaded) > new Date(b.metadata.uploaded) ? -1 : 1
-  })
-  .slice(0, 2)
-
 export default function Home() {
+  const featuredPosts = getListedPosts().slice(0, 2)
   return (
     <MainLayout>
       <div className='sm:prose dark:prose-invert prose prose-sm -mt-4 sm:mt-0 perspective-[1000px]'>
@@ -145,13 +139,13 @@ export default function Home() {
             <div className='w-[210px] sm:w-[260px] shrink-0 pr-10 mr-12'>
               <p className='opacity-60 text-sm font-medium tracking-tight'>Writing</p>
               <div className='flex flex-col gap-6'>
-                {featuredPosts?.map((post, index) => (
-                  <div key={index} className='pr-4'>
-                    <a
+                {featuredPosts.map(post => (
+                  <div key={post.metadata.slug} className='pr-4'>
+                    <Link
                       href={'/posts/' + post.metadata.slug}
                       className='underline decoration-from-font underline-offset-2 tracking-tight'>
                       {post.metadata.title}
-                    </a>
+                    </Link>
                     <p
                       id='desc'
                       className='mt-1 opacity-60 not-prose leading-tight text-xs sm:text-sm'>

@@ -2,45 +2,37 @@ import { Metadata } from 'next'
 import MainLayout from 'src/components/main-layout'
 import { Socials } from 'src/components/socials'
 import Title from 'src/components/title'
-import { getPosts } from 'src/processor/posts'
+import { getListedPosts } from 'src/processor/posts'
+import { absoluteUrl, ogImageUrl, SITE_DESCRIPTION, SITE_NAME } from 'src/utils/site'
 
-import PostTile from './post'
+import PostList from './post-list'
 
 export const metadata: Metadata = {
   title: 'Posts',
-  description: 'Blog by Mayur Bhoi on software development and other interesting things.',
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/posts' },
   openGraph: {
     title: 'Posts',
-    description: 'Blog by Mayur Bhoi on software development and other interesting things.',
-    url: 'https://mayurbhoi.com/posts',
+    description: SITE_DESCRIPTION,
+    url: absoluteUrl('/posts'),
     type: 'website',
     images: [
       {
-        url: 'https://mayurbhoi.com/og?title=Posts&section=true',
+        url: ogImageUrl('Posts', { section: true }),
         width: 1200,
         height: 630,
-        alt: 'Mayur Bhoi',
+        alt: SITE_NAME,
       },
     ],
   },
 }
 
 export default function PostsPage() {
-  const blogs = getPosts()
-    .filter(post => post.metadata.delist === undefined)
-    .sort((a, b) => {
-      return new Date(a.metadata.uploaded) > new Date(b.metadata.uploaded) ? -1 : 1
-    })
+  const posts = getListedPosts().map(post => post.metadata)
   return (
     <MainLayout>
       <Title>posts</Title>
-      <div className='pt-4 pb-24'>
-        <div className={`pt-4 animate-fade-up`}>
-          {blogs.map((post, index) => (
-            <PostTile key={index} post={post.metadata} index={index} />
-          ))}
-        </div>
-      </div>
+      <PostList posts={posts} />
       <div className='h-[1px] w-full bg-black opacity-10 dark:bg-white my-8' />
       <Socials />
     </MainLayout>

@@ -1,25 +1,32 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import readingTime from 'reading-time'
 import MainLayout from 'src/components/main-layout'
 import { MDX } from 'src/components/mdx'
 import { Socials } from 'src/components/socials'
 import { Suggestions } from 'src/components/suggestions'
 import { getPosts } from 'src/processor/posts'
-import { formatDate, generateSuggestions, urlSafe } from 'src/utils/functions'
+import { formatDate, generateSuggestions } from 'src/utils/functions'
+import { absoluteUrl, ogImageUrl } from 'src/utils/site'
 
-export default async function ExpandedPost(props: any) {
-  const params = await props.params
-  const sortedPosts = getPosts().sort((a, b) => {
-    return new Date(a.metadata.uploaded) < new Date(b.metadata.uploaded) ? -1 : 1
-  })
-  const post = sortedPosts.find(post => post.metadata.slug === params.slug)
+type PostParams = { slug: string }
+type PostProps = { params: Promise<PostParams> }
+
+function chronological() {
+  return getPosts().sort(
+    (a, b) => new Date(a.metadata.uploaded).getTime() - new Date(b.metadata.uploaded).getTime()
+  )
+}
+
+export default async function ExpandedPost({ params }: PostProps) {
+  const { slug } = await params
+  const sortedPosts = chronological()
+  const post = sortedPosts.find(post => post.metadata.slug === slug)
   if (!post) notFound()
-  const { title, description, uploaded, substack } = post?.metadata
+
+  const { title, description, uploaded, substack } = post.metadata
   const suggestions = generateSuggestions(sortedPosts, post)
-  const uploadDate = formatDate(uploaded)
-  const readingMinutes = readingTime(post.content).minutes.toFixed()
-  const byline = generateByline(uploadDate, readingMinutes)
+  const byline = generateByline(formatDate(uploaded), post.readingMinutes)
+
   return (
     <MainLayout>
       <div className='prose prose-sm sm:prose dark:prose-invert pt-4 animate-fade-up'>
@@ -27,7 +34,7 @@ export default async function ExpandedPost(props: any) {
         <p className='not-prose opacity-70 text-sm pt-2 pb-1'>{description}</p>
         <div className='not-prose flex items-center justify-between'>
           <span className='opacity-50 text-[11px] font-mono font-medium'>{byline}</span>
-          {typeof substack === 'string' ? (
+          {substack ? (
             <div className='not-prose flex items-center justify-center text-right font-sans text-xs text-orange-600 dark:text-orange-300 opacity-100'>
               <a href={substack} target={'_blank'} rel={'noopener noreferrer'}>
                 Also available on Substack ↗
@@ -45,47 +52,50 @@ export default async function ExpandedPost(props: any) {
   )
 }
 
-function generateByline(uploadDate: string, readingMinutes: string): string {
-  const readingText: string = ' • ' + (readingMinutes === '0' ? '<1' : readingMinutes) + ' min read'
-  return uploadDate + readingText
+function generateByline(uploadDate: string, readingMinutes: number): string {
+  const rounded = Math.round(readingMinutes)
+  return `${uploadDate} • ${rounded < 1 ? '<1' : rounded} min read`
 }
 
-export async function generateStaticParams() {
-  const posts = getPosts()
-  return posts.map(post => ({
-    slug: post.metadata.slug,
-  }))
+export async function generateStaticParams(): Promise<Array<PostParams>> {
+  return getPosts().map(post => ({ slug: post.metadata.slug }))
 }
 
-export const generateMetadata = async (props: any) => {
-  const params = await props.params
-  const post = getPosts().find(post => post.metadata.slug === params.slug)
-  if (!post) return
-  const metadata: Metadata = {
-    title: post.metadata.title,
-    description: post.metadata.description,
+export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
+  const { slug } = await params
+  const post = getPosts().find(post => post.metadata.slug === slug)
+  if (!post) return {}
+
+  const { title, description, uploaded, updated, delist } = post.metadata
+  return {
+    title,
+    description,
+    alternates: { canonical: `/posts/${slug}` },
+    // Delisted posts stay reachable by direct link but out of search results.
+    ...(delist ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
-      title: post.metadata.title,
-      description: post.metadata.description,
-      url: 'https://mayurbhoi.com/posts/' + post.metadata.slug,
-      type: 'website',
+      title,
+      description,
+      url: absoluteUrl(`/posts/${slug}`),
+      type: 'article',
+      publishedTime: new Date(uploaded).toISOString(),
+      modifiedTime: new Date(updated || uploaded).toISOString(),
       images: [
         {
-          url: `https://mayurbhoi.com/og?title=${urlSafe(post.metadata.title)}`,
+          url: ogImageUrl(title),
           width: 1200,
           height: 630,
-          alt: post.metadata.title,
+          alt: title,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.metadata.title,
-      description: post.metadata.description,
-      images: [`https://mayurbhoi.com/og?title=${urlSafe(post.metadata.title)}&twitter=true`],
+      title,
+      description,
+      images: [ogImageUrl(title, { twitter: true })],
     },
   }
-  return metadata
 }
 
 function Divider() {

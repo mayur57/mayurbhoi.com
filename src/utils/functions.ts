@@ -1,21 +1,9 @@
-// Image loading shimmer string generator
-export const shimmer = (w: number, h: number) => `
-<svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs>
-    <linearGradient id="g">
-      <stop stop-color="#333" offset="20%" />
-      <stop stop-color="#222" offset="50%" />
-      <stop stop-color="#333" offset="70%" />
-    </linearGradient>
-  </defs>
-  <rect width="${w}" height="${h}" fill="#333" opacity="0.3"/>
-  <rect id="r" width="${w / 3}" height="${h}" fill="url(#g)" opacity="0.4" />
-  <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="2s" repeatCount="indefinite"  />
-</svg>`
+import type { Post } from 'src/processor/posts'
 
-// Convert given string to base64
-export const toBase64 = (str: string) =>
-  typeof window === 'undefined' ? Buffer.from(str).toString('base64') : window.btoa(str)
+export type PostSuggestions = {
+  next: Post | undefined
+  previous: Post | undefined
+}
 
 // Stagger the element using the given rank for group animations
 export const stagger = (rank: number) => `appear stagger-${rank}`
@@ -79,14 +67,9 @@ export function formatDate(dateString: string) {
   return `${fullDate} (${relativeTimeExpression})`
 }
 
-// Custom function to make a string URL safe
-export function urlSafe(str: string) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16))
-}
-
 // Generate suggestions object for a given post
 // Skips delisted posts. Delisted posts should only be available using direct links.
-export function generateSuggestions(sortedPosts: any, currPost: any) {
+export function generateSuggestions(sortedPosts: Array<Post>, currPost: Post): PostSuggestions {
   const curr = sortedPosts.indexOf(currPost)
 
   let next = curr + 1

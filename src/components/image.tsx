@@ -1,24 +1,22 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState, type ComponentProps } from 'react'
 import Image from 'next/image'
 
-interface RoundedImageProps {
+type RoundedImageProps = Omit<ComponentProps<typeof Image>, 'src' | 'alt'> & {
   src: string
   alt: string
   className?: string
-  width?: number
-  height?: number
-  [key: string]: any
 }
 
-export function RoundedImage(props: RoundedImageProps) {
+export function RoundedImage({ src, alt, className, ...rest }: RoundedImageProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const imgRef = useRef<HTMLImageElement>(null)
+  const pinchRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -38,7 +36,7 @@ export function RoundedImage(props: RoundedImageProps) {
     const delta = e.deltaY * -0.001
     const newScale = Math.min(Math.max(1, scale + delta), 5)
     setScale(newScale)
-    
+
     if (newScale === 1) {
       setPosition({ x: 0, y: 0 })
     }
@@ -53,13 +51,13 @@ export function RoundedImage(props: RoundedImageProps) {
           touch2.clientX - touch1.clientX,
           touch2.clientY - touch1.clientY
         )
-        ;(imgRef.current as any).pinchDistance = distance
+        pinchRef.current = distance
       }
     } else if (e.touches.length === 1 && e.touches[0]) {
       setIsDragging(true)
       setDragStart({
         x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
+        y: e.touches[0].clientY - position.y,
       })
     }
   }
@@ -74,14 +72,14 @@ export function RoundedImage(props: RoundedImageProps) {
           touch2.clientX - touch1.clientX,
           touch2.clientY - touch1.clientY
         )
-        
-        const pinchDistance = (imgRef.current as any).pinchDistance
+
+        const pinchDistance = pinchRef.current
         if (pinchDistance) {
           const delta = (distance - pinchDistance) * 0.01
           const newScale = Math.min(Math.max(1, scale + delta), 5)
           setScale(newScale)
-          ;(imgRef.current as any).pinchDistance = distance
-          
+          pinchRef.current = distance
+
           if (newScale === 1) {
             setPosition({ x: 0, y: 0 })
           }
@@ -91,7 +89,7 @@ export function RoundedImage(props: RoundedImageProps) {
       e.preventDefault()
       setPosition({
         x: e.touches[0].clientX - dragStart.x,
-        y: e.touches[0].clientY - dragStart.y
+        y: e.touches[0].clientY - dragStart.y,
       })
     }
   }
@@ -101,7 +99,7 @@ export function RoundedImage(props: RoundedImageProps) {
       setIsDragging(true)
       setDragStart({
         x: e.clientX - position.x,
-        y: e.clientY - position.y
+        y: e.clientY - position.y,
       })
     }
   }
@@ -110,7 +108,7 @@ export function RoundedImage(props: RoundedImageProps) {
     if (isDragging && scale > 1) {
       setPosition({
         x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        y: e.clientY - dragStart.y,
       })
     }
   }
@@ -131,52 +129,54 @@ export function RoundedImage(props: RoundedImageProps) {
 
   return (
     <>
-      <div className={`flex flex-col items-center pt-4 ${props.className || ''}`}>
-        <div 
-          className="cursor-zoom-in"
-          onClick={() => setIsOpen(true)}
-        >
+      <div className={`flex flex-col items-center pt-4 ${className || ''}`}>
+        <button
+          type='button'
+          className='cursor-zoom-in'
+          aria-label={`Expand image: ${alt}`}
+          onClick={() => setIsOpen(true)}>
           <Image
-            // alt={props.alt || ''}
+            src={src}
+            alt={alt}
             className='article-img border rounded-xl dark:border-[#222]'
-            {...props}
+            {...rest}
           />
-        </div>
-        <p className='opacity-70 text-xs text-center sm:px-16'>{props.alt}</p>
+        </button>
+        <p className='opacity-70 text-xs text-center sm:px-16'>{alt}</p>
       </div>
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-200"
-          onClick={handleBackdropClick}
-        >
+          className='fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-200'
+          onClick={handleBackdropClick}>
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-150 hover:scale-110 active:scale-95"
-            aria-label="Close"
-          >
+            className='absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-150 hover:scale-110 active:scale-95'
+            aria-label='Close'>
             <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+              width='20'
+              height='20'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'>
+              <line x1='18' y1='6' x2='6' y2='18' />
+              <line x1='6' y1='6' x2='18' y2='18' />
             </svg>
           </button>
 
+          {/* Intentionally a raw <img>: the lightbox applies its own pinch/drag
+              transforms and must not be resampled by the image optimizer. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             ref={imgRef}
-            alt={props.alt}
-            src={props.src}
-            className="max-w-[90vw] max-h-[90vh] object-contain select-none transition-transform duration-150 ease-out"
+            alt={alt}
+            src={src}
+            className='max-w-[90vw] max-h-[90vh] object-contain select-none transition-transform duration-150 ease-out'
             style={{
               transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-              cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'
+              cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
             }}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}

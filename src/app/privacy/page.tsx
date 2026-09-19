@@ -1,21 +1,25 @@
 import { Metadata } from 'next'
 import MainLayout from 'src/components/main-layout'
 import Title from 'src/components/title'
+import { absoluteUrl, ogImageUrl, SITE_NAME } from 'src/utils/site'
+
+const description = 'Privacy statements about the website and other products by Mayur Bhoi'
 
 export const metadata: Metadata = {
   title: 'Privacy Statements',
-  description: 'Privacy statements about the website and other products by Mayur Bhoi',
+  description,
+  alternates: { canonical: '/privacy' },
   openGraph: {
     title: 'Privacy Statements',
-    description: 'Privacy statements about the website and other products by Mayur Bhoi',
-    url: 'https://mayurbhoi.com/privacy',
+    description,
+    url: absoluteUrl('/privacy'),
     type: 'website',
     images: [
       {
-        url: 'https://mayurbhoi.com/og?title=Privacy%20Statements&section=true',
+        url: ogImageUrl('Privacy Statements', { section: true }),
         width: 1200,
         height: 630,
-        alt: 'Mayur Bhoi',
+        alt: SITE_NAME,
       },
     ],
   },

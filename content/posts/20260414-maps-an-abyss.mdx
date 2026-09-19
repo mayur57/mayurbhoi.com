@@ -48,7 +48,7 @@ The structure looked like this:
 }
 ```
 
-Straightforward enough. The complication: BMTC's concept of "UP" doesn't consistently mean "toward the airport." For most routes it does. For KIA-7, KIA-14, KIA-15A, and KIA-8EW, the UP direction goes *away* from the airport. So you can't blindly pick the UP file. You have to check which direction's last stop matches the airport name and use that.
+Straightforward enough. The complication: BMTC's concept of "UP" doesn't consistently mean "toward the airport." For most routes it does. For KIA-7, KIA-14, KIA-15A, and KIA-8EW, the UP direction goes _away_ from the airport. So you can't blindly pick the UP file. You have to check which direction's last stop matches the airport name and use that.
 
 ```js
 for (const key of ['up', 'down']) {
@@ -70,16 +70,18 @@ GeoJSON is a standard format for geographic data. A route polyline is a `LineStr
 ```json
 {
   "type": "FeatureCollection",
-  "features": [{
-    "type": "Feature",
-    "geometry": {
-      "type": "LineString",
-      "coordinates": [
-        [77.66629, 12.95847],
-        [77.66633, 12.95880]
-      ]
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [77.66629, 12.95847],
+          [77.66633, 12.9588]
+        ]
+      }
     }
-  }]
+  ]
 }
 ```
 
@@ -134,7 +136,7 @@ After compiling the data with the JS script, I verified the output against an eq
 
 One digit off in the fifth decimal place. About one millimeter on the ground. Irrelevant in practice but wrong in principle, and I wanted the outputs to be reproducible across languages.
 
-The cause: Python's `round()` uses **banker's rounding** (round-half-to-even). When a value lands exactly on the 0.5 boundary after scaling, it rounds to the nearest *even* digit. So `12.976465 * 100000 = 1297646.5` rounds to `1297646` (even). JavaScript's `Math.round()` always rounds 0.5 up, so it gives `1297647`.
+The cause: Python's `round()` uses **banker's rounding** (round-half-to-even). When a value lands exactly on the 0.5 boundary after scaling, it rounds to the nearest _even_ digit. So `12.976465 * 100000 = 1297646.5` rounds to `1297646` (even). JavaScript's `Math.round()` always rounds 0.5 up, so it gives `1297647`.
 
 The fix was implementing banker's rounding in JS:
 
@@ -142,8 +144,8 @@ The fix was implementing banker's rounding in JS:
 function roundHalfEven(value, dp) {
   const factor = 10 ** dp
   const scaled = value * factor
-  const floor  = Math.floor(scaled)
-  const frac   = scaled - floor
+  const floor = Math.floor(scaled)
+  const frac = scaled - floor
   if (Math.abs(frac - 0.5) < Number.EPSILON) {
     return (floor % 2 === 0 ? floor : floor + 1) / factor
   }
@@ -160,7 +162,7 @@ The mapping stack is Leaflet + react-leaflet. Leaflet is a 40KB JavaScript libra
 The first thing Leaflet needs is a tile layer — a source of map images. OpenStreetMap provides free tiles:
 
 ```jsx
-<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+<TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
 ```
 
 The tiles are served as 256x256 PNG images indexed by zoom level and tile coordinates. At zoom 11 (city level), you're looking at maybe 20x20 tiles covering Bengaluru. Leaflet handles the math of which tiles to request based on viewport position and zoom.
@@ -178,10 +180,7 @@ The dark theme is a CSS filter trick. OpenStreetMap tiles are light-colored by d
 **Polylines** are rendered using Leaflet's `Polyline` component. Each route's path is an array of `[lat, lng]` pairs:
 
 ```jsx
-<Polyline
-  positions={route.path}
-  pathOptions={{ color: route.color, weight: 3, opacity: 0.9 }}
-/>
+<Polyline positions={route.path} pathOptions={{ color: route.color, weight: 3, opacity: 0.9 }} />
 ```
 
 **Stop markers** use `CircleMarker` instead of the default pin icon. CircleMarker is just a circle drawn in SVG at a lat/lng position. It scales cleanly at all zoom levels and is cheaper to render than custom icons:
@@ -200,7 +199,10 @@ When a route is selected, the map needs to zoom to fit it. Leaflet has `fitBound
 const lats = route.path.map(p => p[0])
 const lngs = route.path.map(p => p[1])
 map.flyToBounds(
-  [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]],
+  [
+    [Math.min(...lats), Math.min(...lngs)],
+    [Math.max(...lats), Math.max(...lngs)],
+  ],
   { padding: [60, 60], duration: 1.2 }
 )
 ```
@@ -222,7 +224,9 @@ navigator.geolocation.getCurrentPosition(
   ({ coords }) => {
     setUserLocation({ lat: coords.latitude, lng: coords.longitude })
   },
-  (err) => { /* handle denial */ },
+  err => {
+    /* handle denial */
+  },
   { timeout: 10000 }
 )
 ```
@@ -236,12 +240,11 @@ The correct formula is **haversine distance**, which accounts for the Earth's cu
 ```js
 function haversine(lat1, lng1, lat2, lng2) {
   const R = 6371
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLng = (lng2 - lng1) * Math.PI / 180
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLng / 2) ** 2
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 ```
@@ -287,11 +290,11 @@ $slack$ is how many minutes you'd have at the airport before your flight. You wa
 Each scheduled departure gets categorized based on slack:
 
 ```js
-if (slack < buf.minimum)          practicality = 'toolate'
+if (slack < buf.minimum) practicality = 'toolate'
 else if (slack < buf.recommended) practicality = 'tight'
-else if (slack <= buf.safe + 30)  practicality = 'recommended'
-else if (slack <= buf.safe + 90)  practicality = 'good'
-else                              practicality = 'early'
+else if (slack <= buf.safe + 30) practicality = 'recommended'
+else if (slack <= buf.safe + 90) practicality = 'good'
+else practicality = 'early'
 ```
 
 The schedule data for each route is a manually curated array of departure times. The BMTC API responses contain `sch_departuretime` fields per vehicle, but these are snapshots of where specific buses were at the time of the API call, not a full timetable. They give you a sense of frequency but not a reliable ordered schedule. For the planner to be useful, the departure times need to be hand-verified against the actual BMTC timetable.
@@ -350,12 +353,10 @@ The app works. It tells you which bus to take and when. That was the goal. Every
   href='https://nammashuttle.com'
   target='_blank'
   rel='noopener noreferrer'
-  className='not-prose mt-4 inline-flex items-stretch no-underline transition-transform duration-200 hover:-translate-y-0.5'
->
+  className='not-prose mt-4 inline-flex items-stretch no-underline transition-transform duration-200 hover:-translate-y-0.5'>
   <span
     className='inline-flex h-16 w-16 shrink-0 items-center justify-center sm:h-20 sm:w-20'
-    style={{ backgroundColor: '#F7CA45' }}
-  >
+    style={{ backgroundColor: '#F7CA45' }}>
     <svg
       aria-hidden='true'
       viewBox='0 0 24 24'

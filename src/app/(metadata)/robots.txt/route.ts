@@ -1,3 +1,5 @@
+import { absoluteUrl } from 'src/utils/site'
+
 export const dynamic = 'force-static'
 
 const robots: string = `
@@ -9,13 +11,16 @@ User-agent: *
 Allow: /
 Disallow: /api
 Disallow: /reading
+Disallow: /stats
 Disallow: /resume.pdf
 
 Allow: /llms.txt
 
-Sitemap: https://www.mayurbhoi.com/sitemap.xml
+Sitemap: ${absoluteUrl('/sitemap.xml')}
 `
 
 export function GET() {
-  return new Response(robots.trim())
+  return new Response(robots.trim(), {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  })
 }

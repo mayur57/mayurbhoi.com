@@ -9,6 +9,7 @@ import { GeistMono } from 'geist/font'
 import { Toaster } from 'sonner'
 import BlurHeader from 'src/components/blur-header'
 import { Providers } from 'src/utils/providers'
+import { SITE_NAME, SITE_URL } from 'src/utils/site'
 
 const inter = localFont({
   src: './fonts/Inter-Variable.ttf',
@@ -25,17 +26,23 @@ const newsreader = Newsreader({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mayurbhoi.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Mayur Bhoi',
-    template: '%s • Mayur Bhoi',
+    default: SITE_NAME,
+    template: `%s • ${SITE_NAME}`,
   },
   description: 'Full-stack developer; doing what I love.',
+  alternates: {
+    canonical: '/',
+    types: {
+      'application/rss+xml': [{ url: '/rss.xml', title: `${SITE_NAME} — Posts` }],
+    },
+  },
   openGraph: {
-    title: 'Mayur Bhoi',
+    title: SITE_NAME,
     description: 'Full-stack developer; doing what I love.',
-    url: 'https://mayurbhoi.com',
-    siteName: 'Mayur Bhoi',
+    url: SITE_URL,
+    siteName: SITE_NAME,
     locale: 'en_IN',
     type: 'website',
   },
@@ -51,7 +58,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: 'Mayur Bhoi',
+    title: SITE_NAME,
     card: 'summary_large_image',
   },
   verification: {

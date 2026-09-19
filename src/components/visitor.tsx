@@ -1,49 +1,26 @@
 'use client'
 
-import { createContext, useEffect, useState } from 'react'
-
-interface LocationContextType {
-  location: string | null
-}
-
-// Provide a default value to avoid TypeScript errors
-const LocationContext = createContext<LocationContextType>({
-  location: null,
-})
+import { useEffect, useState } from 'react'
 
 export const LastVisitor = () => {
   const [location, setLocation] = useState('somewhere on Earth')
 
   useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        // Fetch the previous location
-        const res = await fetch('/api/location')
-        const { location } = await res.json()
-        setLocation(location)
+    let cancelled = false
 
-        // Fetch current location and store in KV
-        const ipRes = await fetch('https://ipapi.co/json')
-        const ipData = await ipRes.json()
-        const { city, country_name } = ipData
-        await fetch('/api/location', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ city, country: country_name }),
-        })
-      } catch (error) {
-        console.error('Error fetching or updating location:', error)
-      }
+    // A single call: the route reports the previous visitor and records this
+    // one from edge geo headers on its own.
+    fetch('/api/location')
+      .then(res => res.json())
+      .then(({ location }) => {
+        if (!cancelled && location) setLocation(location)
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
     }
-
-    fetchLocation()
   }, [])
 
-  return (
-    <LocationContext.Provider value={{ location }}>
-      <p className='text-sm opacity-50 select-none'>Last visit from {location}</p>
-    </LocationContext.Provider>
-  )
+  return <p className='text-sm opacity-50 select-none'>Last visit from {location}</p>
 }

@@ -2,10 +2,10 @@ import { Suspense } from 'react'
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton, type TweetProps } from 'react-tweet'
 import { getTweet } from 'react-tweet/api'
 
-const TweetContent = async ({ id, components, onError }: any) => {
-  let error
+const TweetContent = async ({ id, components, onError }: TweetProps) => {
+  let error: unknown
   const tweet = id
-    ? await getTweet(id).catch(err => {
+    ? await getTweet(id).catch((err: unknown) => {
         if (onError) {
           error = onError(err)
         } else {
@@ -19,7 +19,7 @@ const TweetContent = async ({ id, components, onError }: any) => {
     return <NotFound error={error} />
   }
 
-  return <EmbeddedTweet tweet={tweet} components={components} />
+  return <EmbeddedTweet tweet={tweet} {...(components ? { components } : {})} />
 }
 
 export const ReactTweet = (props: TweetProps) => <TweetContent {...props} />

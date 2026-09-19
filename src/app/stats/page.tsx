@@ -50,14 +50,10 @@ export default function StatsPage() {
   }
 
   const countryEntries =
-    stats?.countries != null
-      ? Object.entries(stats.countries).sort((a, b) => b[1] - a[1])
-      : []
+    stats?.countries != null ? Object.entries(stats.countries).sort((a, b) => b[1] - a[1]) : []
 
   const cityEntries =
-    stats?.cities != null
-      ? Object.entries(stats.cities).sort((a, b) => b[1] - a[1])
-      : []
+    stats?.cities != null ? Object.entries(stats.cities).sort((a, b) => b[1] - a[1]) : []
 
   const timelineEntries =
     stats?.timeline != null
@@ -67,9 +63,7 @@ export default function StatsPage() {
   if (!stats) {
     return (
       <div className='flex min-h-screen items-center justify-center px-4'>
-        <form
-          onSubmit={handleSubmit}
-          className='w-full max-w-sm space-y-3 rounded-lg'>
+        <form onSubmit={handleSubmit} className='w-full max-w-sm space-y-3 rounded-lg'>
           <label className='flex flex-col gap-1 text-sm'>
             <input
               type='password'
@@ -105,19 +99,13 @@ export default function StatsPage() {
 
         {countryEntries.length > 0 && (
           <section>
-            <h2 className='mb-2 text-sm font-semibold tracking-tight opacity-70'>
-              Top countries
-            </h2>
+            <h2 className='mb-2 text-sm font-semibold tracking-tight opacity-70'>Top countries</h2>
             <div className='overflow-x-auto rounded-md border border-neutral-200/40 dark:border-neutral-800/60'>
               <table className='min-w-full text-sm'>
                 <thead className='bg-neutral-50/80 dark:bg-neutral-900/60'>
                   <tr>
-                    <th className='px-3 py-2 text-left font-medium text-neutral-500'>
-                      Country
-                    </th>
-                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>
-                      Visits
-                    </th>
+                    <th className='px-3 py-2 text-left font-medium text-neutral-500'>Country</th>
+                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>Visits</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,24 +125,18 @@ export default function StatsPage() {
 
         {cityEntries.length > 0 && (
           <section>
-            <h2 className='mb-2 text-sm font-semibold tracking-tight opacity-70'>
-              Top cities
-            </h2>
+            <h2 className='mb-2 text-sm font-semibold tracking-tight opacity-70'>Top cities</h2>
             <div className='overflow-x-auto rounded-md border border-neutral-200/40 dark:border-neutral-800/60'>
               <table className='min-w-full text-sm'>
                 <thead className='bg-neutral-50/80 dark:bg-neutral-900/60'>
                   <tr>
                     <th className='px-3 py-2 text-left font-medium text-neutral-500'>City</th>
-                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>
-                      Visits
-                    </th>
+                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>Visits</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cityEntries.map(([city, count]) => (
-                    <tr
-                      key={city}
-                      className='border-t border-neutral-100 dark:border-neutral-900'>
+                    <tr key={city} className='border-t border-neutral-100 dark:border-neutral-900'>
                       <td className='px-3 py-1.5'>{city}</td>
                       <td className='px-3 py-1.5 text-right tabular-nums'>{count}</td>
                     </tr>
@@ -173,16 +155,12 @@ export default function StatsPage() {
                 <thead className='bg-neutral-50/80 dark:bg-neutral-900/60'>
                   <tr>
                     <th className='px-3 py-2 text-left font-medium text-neutral-500'>Date</th>
-                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>
-                      Visits
-                    </th>
+                    <th className='px-3 py-2 text-right font-medium text-neutral-500'>Visits</th>
                   </tr>
                 </thead>
                 <tbody>
                   {timelineEntries.map(([date, count]) => (
-                    <tr
-                      key={date}
-                      className='border-t border-neutral-100 dark:border-neutral-900'>
+                    <tr key={date} className='border-t border-neutral-100 dark:border-neutral-900'>
                       <td className='px-3 py-1.5 tabular-nums'>{date}</td>
                       <td className='px-3 py-1.5 text-right tabular-nums'>{count}</td>
                     </tr>

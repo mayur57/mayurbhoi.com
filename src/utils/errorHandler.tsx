@@ -8,7 +8,7 @@ export function handleError(error: unknown) {
   } else if (typeof error === 'string') {
     message = error
   } else if (typeof error === 'object' && error !== null && 'message' in error) {
-    message = String((error as any).message)
+    message = String((error as { message: unknown }).message)
   }
 
   toast.error(message)

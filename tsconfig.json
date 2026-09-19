@@ -3,11 +3,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -37,10 +33,7 @@
       }
     ],
     "paths": {
-      "*": ["./*"],
-      "contentlayer/generated": [
-        "./.contentlayer/generated"
-      ]
+      "*": ["./*"]
     }
   },
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -49,12 +42,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".contentlayer/generated",
-    "src/components/now-playing.tsx",
-    "src/app/api/spotify/route.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

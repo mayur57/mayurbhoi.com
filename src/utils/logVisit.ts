@@ -1,5 +1,5 @@
-import { format } from 'date-fns'
 import { kv } from '@vercel/kv'
+import { format } from 'date-fns'
 
 const CITIES_KEY = 'visits:cities'
 const COUNTRIES_KEY = 'visits:countries'
@@ -16,7 +16,7 @@ export async function logVisit(city: string, country: string): Promise<void> {
       kv.hincrby(COUNTRIES_KEY, country, 1),
       kv.hincrby(TIMELINE_KEY, timelineField, 1),
     ])
-  } catch(e){
+  } catch (e) {
     console.error('Error logging visit:', e)
   }
 }

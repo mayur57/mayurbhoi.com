@@ -6,9 +6,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "prepare": "husky install",
+    "format:check": "prettier --check .",
+    "prepare": "husky",
     "commit": "git-cz"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,mdx,css,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "config": {
     "commitizen": {
@@ -60,6 +71,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint-config-prettier": "^9.0.0",
     "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.6"
   }
 }

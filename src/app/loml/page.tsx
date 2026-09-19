@@ -1,21 +1,23 @@
 import { Metadata } from 'next'
+import { absoluteUrl, ogImageUrl, SITE_DESCRIPTION, SITE_NAME } from 'src/utils/site'
 
 import ThreeScene from './scene'
 
 export const metadata: Metadata = {
   title: 'The Love of My Life',
-  description: 'Blog by Mayur Bhoi on software development and other interesting things.',
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/loml' },
   openGraph: {
-    title: 'Posts',
-    description: 'Blog by Mayur Bhoi on software development and other interesting things.',
-    url: 'https://mayurbhoi.com/posts',
+    title: 'The Love of My Life',
+    description: SITE_DESCRIPTION,
+    url: absoluteUrl('/loml'),
     type: 'website',
     images: [
       {
-        url: 'https://mayurbhoi.com/og?title=The Love of My Life&section=true',
+        url: ogImageUrl('The Love of My Life', { section: true }),
         width: 1200,
         height: 630,
-        alt: 'Mayur Bhoi',
+        alt: SITE_NAME,
       },
     ],
   },

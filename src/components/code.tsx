@@ -1,27 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { isValidElement, useState, type ReactNode } from 'react'
 import { handleError } from 'src/utils/errorHandler'
 
-export default function Code({ children }: any) {
+// rehype-highlight nests a <code> element inside <pre>; the language lives on
+// its className and the text has to be walked out of the element tree.
+type CodeChild = ReactNode & { props?: { className?: string; children?: ReactNode } }
+
+export default function Code({ children }: { children?: CodeChild }) {
   const [copied, setCopied] = useState(false)
 
   const displayLanguage =
     children?.props?.className
       ?.split(' ')
-      ?.filter((f: string) => f.includes('language'))[0]
+      ?.filter(f => f.includes('language'))[0]
       ?.replace('language-', '') || 'text'
 
-  const extractText = (node: any): string => {
+  const extractText = (node: ReactNode): string => {
     if (typeof node === 'string') return node
+    if (typeof node === 'number') return String(node)
     if (Array.isArray(node)) return node.map(extractText).join('')
-    if (node?.props?.children) return extractText(node.props.children)
+    if (isValidElement<{ children?: ReactNode }>(node)) return extractText(node.props.children)
     return ''
   }
 
   const handleCopy = async () => {
     try {
-      const codeContent = extractText(children.props.children)
+      const codeContent = extractText(children?.props?.children)
       await navigator.clipboard.writeText(codeContent)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)

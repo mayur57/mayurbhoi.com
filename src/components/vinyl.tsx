@@ -4,7 +4,7 @@ interface VinylRecordProps {
   size?: number
   label?: React.ReactNode
   spin: boolean
-  className?: any
+  className?: string
 }
 
 function VinylRecord({ size = 300, label, spin, className }: VinylRecordProps) {

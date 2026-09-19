@@ -16,6 +16,9 @@ interface Song {
   url: string
 }
 
+// The fallback cover is an SVG, which the image optimizer refuses to process.
+const isVector = (src: string) => src.endsWith('.svg')
+
 function Shimmer() {
   return <div className='animate-pulse bg-gray-300 dark:bg-gray-700 h-full w-full rounded-md' />
 }
@@ -112,6 +115,7 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
                 height={64}
                 width={64}
                 alt='Album Cover'
+                unoptimized={isVector(data.cover)}
                 className='w-14 h-14 object-cover rounded-full'
               />
             }
@@ -122,10 +126,12 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
             height={64}
             width={64}
             alt='Album Cover'
+            unoptimized={isVector(data.cover)}
             className='w-16 h-16 rounded-[8px]'
           />
         )}
-        <div className={`flex min-w-0 flex-1 flex-col justify-center pr-8 ${data.isPlaying && '-translate-x-10'}`}>
+        <div
+          className={`flex min-w-0 flex-1 flex-col justify-center pr-8 ${data.isPlaying && '-translate-x-10'}`}>
           <BlurFade>
             <h3 className='truncate text-sm !font-medium !tracking-tight'>{data.title}</h3>
           </BlurFade>
@@ -171,7 +177,10 @@ function SpotifyWidgetLoaded({ data, error }: { data: Song; error?: boolean }) {
 function SpotifyWidget() {
   const [data, setData] = useState<Song | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState({ status: false, message: null })
+  const [error, setError] = useState<{ status: boolean; message: string | null }>({
+    status: false,
+    message: null,
+  })
 
   useEffect(() => {
     const fetchSpotifyData = async () => {
@@ -196,9 +205,9 @@ function SpotifyWidget() {
         const result: Song = await res.json()
         setData(result)
         setError({ status: false, message: null })
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[spotify widget] Failed to load Spotify data:', err)
-        setError({ status: true, message: err.message })
+        setError({ status: true, message: err instanceof Error ? err.message : 'Unknown error' })
       } finally {
         setLoading(false)
       }

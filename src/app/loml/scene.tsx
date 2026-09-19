@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export default function ThreeScene() {
   const mountRef = useRef<HTMLDivElement>(null)
@@ -54,7 +54,7 @@ export default function ThreeScene() {
 
     // Load coke can model
     const loader = new GLTFLoader(manager)
-    loader.load('/models/loml.glb', (gltf: any) => {
+    loader.load('/models/loml.glb', (gltf: GLTF) => {
       model = gltf.scene
       if (model) scene.add(model)
     })
@@ -75,8 +75,9 @@ export default function ThreeScene() {
     }
     window.addEventListener('resize', handleResize)
 
+    const mount = mountRef.current
     return () => {
-      if (mountRef.current) mountRef.current.removeChild(renderer.domElement)
+      if (mount?.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
       window.removeEventListener('resize', handleResize)
     }
   }, [])

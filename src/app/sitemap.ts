@@ -1,17 +1,21 @@
-import { getPosts } from 'src/processor/posts'
+import { MetadataRoute } from 'next'
+import { getListedPosts } from 'src/processor/posts'
+import { absoluteUrl } from 'src/utils/site'
 
-const posts = getPosts()
+// /reading and /stats are intentionally absent; robots.txt disallows both.
+const ROUTES = ['/', '/posts', '/loml', '/privacy']
 
-export default async function sitemap() {
-  const blogs = posts.map(post => ({
-    url: `https://mayurbhoi.com/posts/${post.metadata.slug}`,
-    lastModified: new Date(post.metadata.uploaded).toISOString().split('T')[0],
+export default function sitemap(): MetadataRoute.Sitemap {
+  const routes = ROUTES.map(route => ({
+    url: absoluteUrl(route),
+    lastModified: new Date(),
   }))
 
-  const routes = ['', '/posts', '/privacy'].map(route => ({
-    url: `https://mayurbhoi.com${route}`,
-    lastModified: new Date().toISOString().split('T')[0],
+  // Only listed posts: a delisted post should stay out of search indexes too.
+  const posts = getListedPosts().map(post => ({
+    url: absoluteUrl(`/posts/${post.metadata.slug}`),
+    lastModified: new Date(post.metadata.updated || post.metadata.uploaded),
   }))
 
-  return [...routes, ...blogs]
+  return [...routes, ...posts]
 }
